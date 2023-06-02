@@ -18,7 +18,7 @@ __C.VIS = edict()
 #------------------------------DATA------------------------
 
 __C.DATA.DATASET = 'city' # dataset
-__C.DATA.DATA_PATH = '/content/drive/MyDrive/project-WasteSemSeg-main_2/dataset'
+__C.DATA.DATA_PATH = '/kaggle/input/resortit/dataset'
 __C.DATA.NUM_CLASSES = 5
 __C.DATA.IGNORE_LABEL = 255
 __C.DATA.IGNORE_LABEL_TO_TRAIN_ID = 19 # 255->19
