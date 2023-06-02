@@ -88,7 +88,8 @@ __C.VIS.PALETTE_LABEL_COLORS = [128, 64, 128, 244, 35, 232, 70, 70, 70, 102, 102
 
 #------------------------------MISC------------------------
 if not os.path.exists(__C.TRAIN.CKPT_PATH):
-    os.mkdir(__C.TRAIN.CKPT_PATH)
+    ckpt_path = "/kaggle/working/ckpt"
+    os.makedirs(ckpt_path, exist_ok=True)
 if not os.path.exists(os.path.join(__C.TRAIN.CKPT_PATH, __C.TRAIN.EXP_NAME)):
     os.mkdir(os.path.join(__C.TRAIN.CKPT_PATH, __C.TRAIN.EXP_NAME))
 
