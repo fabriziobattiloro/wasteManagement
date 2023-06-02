@@ -94,7 +94,7 @@ def create_directory(directory):
     if not os.path.exists(directory):
         os.mkdir(directory)
 
-TRAIN_CKPT_PATH = '~/checkpoints'
+TRAIN_CKPT_PATH = os.path.join(os.path.expanduser('~'), 'checkpoints')
 EXP_NAME = 'my_experiment'
 EXP_LOG_PATH = os.path.join(TRAIN_CKPT_PATH, EXP_NAME, 'logs')
 EXP_PATH = os.path.join(TRAIN_CKPT_PATH, EXP_NAME)
