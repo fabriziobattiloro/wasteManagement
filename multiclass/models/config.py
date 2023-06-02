@@ -88,15 +88,20 @@ __C.VIS.PALETTE_LABEL_COLORS = [128, 64, 128, 244, 35, 232, 70, 70, 70, 102, 102
 
 #------------------------------MISC------------------------
 
-if not os.path.exists(__C.TRAIN.CKPT_PATH):
-    os.mkdir(__C.TRAIN.CKPT_PATH)
-if not os.path.exists(os.path.join(__C.TRAIN.CKPT_PATH, __C.TRAIN.EXP_NAME)):
-    os.mkdir(os.path.join(__C.TRAIN.CKPT_PATH, __C.TRAIN.EXP_NAME))
+import os
 
-if not os.path.exists(__C.TRAIN.EXP_LOG_PATH):
-    os.mkdir(__C.TRAIN.EXP_LOG_PATH)
-if not os.path.exists(__C.TRAIN.EXP_PATH):
-    os.mkdir(__C.TRAIN.EXP_PATH)
+def create_directory(directory):
+    if not os.path.exists(directory):
+        os.mkdir(directory)
+
+TRAIN_CKPT_PATH = '~/checkpoints'
+EXP_NAME = 'my_experiment'
+EXP_LOG_PATH = os.path.join(TRAIN_CKPT_PATH, EXP_NAME, 'logs')
+EXP_PATH = os.path.join(TRAIN_CKPT_PATH, EXP_NAME)
+
+create_directory(TRAIN_CKPT_PATH)
+create_directory(EXP_LOG_PATH)
+create_directory(EXP_PATH)
 #================================================================================
 #================================================================================
 #================================================================================  
