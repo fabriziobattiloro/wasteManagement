@@ -87,24 +87,25 @@ __C.VIS.PALETTE_LABEL_COLORS = [128, 64, 128, 244, 35, 232, 70, 70, 70, 102, 102
 
 
 #------------------------------MISC------------------------
-# Specify a different directory where you have write access
+
+# Specify the output directory path
 output_dir = '/kaggle/working/output'
 
 # Create the output directory if it doesn't exist
 os.makedirs(output_dir, exist_ok=True)
 
-# Update the checkpoint directory path
+# Update the experiment path directory
+exp_dir = os.path.join(output_dir, 'exp')
+os.makedirs(exp_dir, exist_ok=True)
+
+# Update the other directory paths as needed
 ckpt_dir = os.path.join(output_dir, cfg.TRAIN.EXP_NAME)
-os.makedirs(ckpt_dir, exist_ok=True)
-
-# Update the experiment log directory path
 exp_log_dir = os.path.join(output_dir, 'logs')
-os.makedirs(exp_log_dir, exist_ok=True)
 
-# Update the experiment path directory if it doesn't exist
-if not os.path.exists(cfg.TRAIN.EXP_PATH):
-    os.makedirs(cfg.TRAIN.EXP_PATH, exist_ok=True)
-
+# Update the config with the new paths
+cfg.TRAIN.EXP_PATH = exp_dir
+cfg.TRAIN.CKPT_PATH = ckpt_dir
+cfg.TRAIN.EXP_LOG_PATH = exp_log_dir
 #================================================================================
 #================================================================================
 #================================================================================  
