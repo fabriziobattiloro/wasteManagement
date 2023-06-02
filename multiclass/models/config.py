@@ -88,24 +88,15 @@ __C.VIS.PALETTE_LABEL_COLORS = [128, 64, 128, 244, 35, 232, 70, 70, 70, 102, 102
 
 #------------------------------MISC------------------------
 
-# Specify the output directory path
-output_dir = '/kaggle/working/output'
+if not os.path.exists(__C.TRAIN.CKPT_PATH):
+    os.mkdir(__C.TRAIN.CKPT_PATH)
+if not os.path.exists(os.path.join(__C.TRAIN.CKPT_PATH, __C.TRAIN.EXP_NAME)):
+    os.mkdir(os.path.join(__C.TRAIN.CKPT_PATH, __C.TRAIN.EXP_NAME))
 
-# Create the output directory if it doesn't exist
-os.makedirs(output_dir, exist_ok=True)
-
-# Update the experiment path directory
-exp_dir = os.path.join(output_dir, 'exp')
-os.makedirs(exp_dir, exist_ok=True)
-
-# Update the other directory paths as needed
-ckpt_dir = os.path.join(output_dir, cfg.TRAIN.EXP_NAME)
-exp_log_dir = os.path.join(output_dir, 'logs')
-
-# Update the config with the new paths
-cfg.TRAIN.EXP_PATH = exp_dir
-cfg.TRAIN.CKPT_PATH = ckpt_dir
-cfg.TRAIN.EXP_LOG_PATH = exp_log_dir
+if not os.path.exists(__C.TRAIN.EXP_LOG_PATH):
+    os.mkdir(__C.TRAIN.EXP_LOG_PATH)
+if not os.path.exists(__C.TRAIN.EXP_PATH):
+    os.mkdir(__C.TRAIN.EXP_PATH)
 #================================================================================
 #================================================================================
 #================================================================================  
