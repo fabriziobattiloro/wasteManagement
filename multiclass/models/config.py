@@ -87,18 +87,23 @@ __C.VIS.PALETTE_LABEL_COLORS = [128, 64, 128, 244, 35, 232, 70, 70, 70, 102, 102
 
 
 #------------------------------MISC------------------------
-if not os.path.exists(__C.TRAIN.CKPT_PATH):
+# Create the checkpoint directory if it doesn't exist
+if not os.path.exists(cfg.TRAIN.CKPT_PATH):
     ckpt_path = "/kaggle/working/ckpt"
     os.makedirs(ckpt_path, exist_ok=True)
-if not os.path.exists(os.path.join(__C.TRAIN.CKPT_PATH, __C.TRAIN.EXP_NAME)):
-    ckpt_dir = os.path.join(cfg.TRAIN.CKPT_PATH, cfg.TRAIN.EXP_NAME)
+
+# Create the specific checkpoint directory if it doesn't exist
+ckpt_dir = os.path.join(cfg.TRAIN.CKPT_PATH, cfg.TRAIN.EXP_NAME)
+if not os.path.exists(ckpt_dir):
     os.makedirs(ckpt_dir, exist_ok=True)
 
-if not os.path.exists(__C.TRAIN.EXP_LOG_PATH):
-    os.makedirs(__C.TRAIN.EXP_LOG_PATH, exist_ok=True)
+# Create the experiment log directory if it doesn't exist
+if not os.path.exists(cfg.TRAIN.EXP_LOG_PATH):
+    os.makedirs(cfg.TRAIN.EXP_LOG_PATH, exist_ok=True)
 
-if not os.path.exists(__C.TRAIN.EXP_PATH):
-    os.mkdir(__C.TRAIN.EXP_PATH, exist_ok=True)
+# Create the experiment path directory if it doesn't exist
+if not os.path.exists(cfg.TRAIN.EXP_PATH):
+    os.mkdir(cfg.TRAIN.EXP_PATH, exist_ok=True)
 
 #================================================================================
 #================================================================================
