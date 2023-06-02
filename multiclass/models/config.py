@@ -91,12 +91,14 @@ if not os.path.exists(__C.TRAIN.CKPT_PATH):
     ckpt_path = "/kaggle/working/ckpt"
     os.makedirs(ckpt_path, exist_ok=True)
 if not os.path.exists(os.path.join(__C.TRAIN.CKPT_PATH, __C.TRAIN.EXP_NAME)):
-    os.mkdir(os.path.join(__C.TRAIN.CKPT_PATH, __C.TRAIN.EXP_NAME))
+    ckpt_dir = os.path.join(cfg.TRAIN.CKPT_PATH, cfg.TRAIN.EXP_NAME)
+    os.makedirs(ckpt_dir, exist_ok=True)
 
 if not os.path.exists(__C.TRAIN.EXP_LOG_PATH):
-    os.mkdir(__C.TRAIN.EXP_LOG_PATH)
+    os.makedirs(__C.TRAIN.EXP_LOG_PATH, exist_ok=True)
+
 if not os.path.exists(__C.TRAIN.EXP_PATH):
-    os.mkdir(__C.TRAIN.EXP_PATH)
+    os.mkdir(__C.TRAIN.EXP_PATH, exist_ok=True)
 
 #================================================================================
 #================================================================================
