@@ -47,8 +47,7 @@ def main():
         net=net.cuda()
 
     net.train()
-    criterion = ICNetLoss(cfg.DATA.NUM_CLASSES)
-    criterion.cuda()
+    criterion = torch.nn.CrossEntropyLoss().cuda
     optimizer = optim.Adam(net.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
     scheduler = StepLR(optimizer, step_size=cfg.TRAIN.NUM_EPOCH_LR_DECAY, gamma=cfg.TRAIN.LR_DECAY)
     _t = {'train time' : Timer(),'val time' : Timer()} 
@@ -72,13 +71,13 @@ def train(train_loader, net, criterion, optimizer, epoch):
 
         
         outputs = net(inputs)
-        loss_dict = criterion(outputs, labels)
+        out0, out1, out2 = outputs
+        loss1 = criterion(out0, labels)
+        loss2 = criterion(out1, labels)
+        loss3 = criterion(out2, labels)
 
-        losses = sum(loss for loss in loss_dict.values())
+        losses = loss1 + loss2 + loss3
 
-        # reduce losses over all GPUs for logging purposes
-        loss_dict_reduced = reduce_loss_dict(loss_dict)
-        losses_reduced = sum(loss for loss in loss_dict_reduced.values())
         optimizer.zero_grad()
         losses.backward()
         optimizer.step()
