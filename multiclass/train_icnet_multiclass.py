@@ -72,12 +72,13 @@ def train(train_loader, net, criterion, optimizer, epoch):
 
         
         outputs = net(inputs)
-        out0, out1, out2 = outputs
+        out0, out1, out2, out3 = outputs
         loss1 = criterion(out0, labels)
         loss2 = criterion(out1, labels)
         loss3 = criterion(out2, labels)
+        loss4 = criterion(out3, labels)
 
-        losses = loss1 + loss2 + loss3
+        losses = loss1 + loss2 + loss3 + loss4
 
         optimizer.zero_grad()
         losses.backward()
