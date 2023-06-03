@@ -86,7 +86,6 @@ def train(train_loader, net, criterion, optimizer, epoch):
 
 def validate(val_loader, net, criterion, optimizer, epoch, restore):
     net.eval()
-    criterion.cpu()
     input_batches = []
     output_batches = []
     label_batches = []
