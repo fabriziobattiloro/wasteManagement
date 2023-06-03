@@ -47,7 +47,7 @@ def main():
         net=net.cuda()
 
     net.train()
-    criterion = torch.nn.CrossEntropyLoss()
+    criterion = ICNetLoss(cfg.DATA.NUM_CLASSES)
     criterion.cuda()
     optimizer = optim.Adam(net.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
     scheduler = StepLR(optimizer, step_size=cfg.TRAIN.NUM_EPOCH_LR_DECAY, gamma=cfg.TRAIN.LR_DECAY)
@@ -72,17 +72,13 @@ def train(train_loader, net, criterion, optimizer, epoch):
 
         
         outputs = net(inputs)
-        # Resize or resample the output tensors to match the target size
-        target_size = labels.size()[2:]  # Get the spatial size of the target tensor
-        outputs_resized = []
-        for output in outputs:
-            output_resized = F.interpolate(output, size=target_size, mode='bilinear', align_corners=True)
-            outputs_resized.append(output_resized)
-        outputs_resized = tuple(outputs_resized)
+        loss_dict = criterion(outputs, labels)
 
-        # Compute the losses using the resized output tensors
-        losses = criterion(outputs_resized, labels)
+        losses = sum(loss for loss in loss_dict.values())
 
+        # reduce losses over all GPUs for logging purposes
+        loss_dict_reduced = reduce_loss_dict(loss_dict)
+        losses_reduced = sum(loss for loss in loss_dict_reduced.values())
         optimizer.zero_grad()
         losses.backward()
         optimizer.step()
