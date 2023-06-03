@@ -47,7 +47,8 @@ def main():
         net=net.cuda()
 
     net.train()
-    criterion = torch.nn.CrossEntropyLoss().cuda
+    criterion = torch.nn.CrossEntropyLoss()
+    criterion.cuda()
     optimizer = optim.Adam(net.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
     scheduler = StepLR(optimizer, step_size=cfg.TRAIN.NUM_EPOCH_LR_DECAY, gamma=cfg.TRAIN.LR_DECAY)
     _t = {'train time' : Timer(),'val time' : Timer()} 
@@ -86,6 +87,7 @@ def train(train_loader, net, criterion, optimizer, epoch):
 
 def validate(val_loader, net, criterion, optimizer, epoch, restore):
     net.eval()
+    criterion.cpu()
     input_batches = []
     output_batches = []
     label_batches = []
