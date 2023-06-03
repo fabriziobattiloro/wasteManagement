@@ -12,11 +12,12 @@ import torchvision.transforms as standard_transforms
 import torchvision.utils as vutils
 from tensorboardX import SummaryWriter
 
-from models.model_BiSeNet2 import BiSeNetV2
+from models.model_BiSeNet2 import BiSeNet
 from models.config import cfg, __C
 from models.loading_data import loading_data
 from models.utils import *
 from models.timer import Timer
+from models.loss import MixSoftmaxCrossEntropyLoss
 import pdb
 
 exp_name = cfg.TRAIN.EXP_NAME
@@ -28,7 +29,7 @@ train_loader, val_loader, restore_transform = loading_data()
 
 def main():
 
-    cfg_file = open('/kaggle/working/project-code1/multiclass/models/config.py',"r")  
+    cfg_file = open('./models/config.py',"r")  
     cfg_lines = cfg_file.readlines()
     
     with open(log_txt, 'a') as f:
@@ -38,7 +39,7 @@ def main():
     torch.backends.cudnn.benchmark = True
 
     net = []  
-    net = BiSeNetV2( cfg.DATA.NUM_CLASSES) 
+    net = BiSeNet(cfg.DATA.NUM_CLASSES) 
 
     if len(cfg.TRAIN.GPU_ID)>1:
         net = torch.nn.DataParallel(net, device_ids=cfg.TRAIN.GPU_ID).cuda()
@@ -46,7 +47,7 @@ def main():
         net=net.cuda()
 
     net.train()
-    criterion = CrossEntropyLoss2d()
+    criterion = MixSoftmaxCrossEntropyLoss()
     criterion.cuda()
 
     optimizer = optim.Adam(net.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
@@ -69,17 +70,18 @@ def train(train_loader, net, criterion, optimizer, epoch):
         inputs, labels = data
         inputs = Variable(inputs).cuda()
         labels = Variable(labels).cuda()
-   
+
+        
         outputs = net(inputs)
-        out_aux, out_aux2, out_aux3, out_aux4, out_aux5= outputs
-        loss1 = criterion(out_aux, labels)
-        loss2 = criterion(out_aux2, labels)
-        loss3 = criterion(out_aux3, labels)
-        loss4 = criterion(out_aux4, labels)
-        loss5 = criterion(out_aux5, labels)
-        loss=loss1+loss2+loss3+loss4+loss5
+        loss_dict = criterion(outputs, labels)
+
+        losses = sum(loss for loss in loss_dict.values())
+
+        # reduce losses over all GPUs for logging purposes
+        loss_dict_reduced = reduce_loss_dict(loss_dict)
+        losses_reduced = sum(loss for loss in loss_dict_reduced.values())
         optimizer.zero_grad()
-        loss.backward()
+        losses.backward()
         optimizer.step()
 
 
