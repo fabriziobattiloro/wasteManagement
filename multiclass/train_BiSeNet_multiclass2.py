@@ -47,7 +47,7 @@ def main():
         net=net.cuda()
 
     net.train()
-    criterion = MixSoftmaxCrossEntropyLoss()
+    criterion = torch.nn.CrossEntropyLoss()
     criterion.cuda()
 
     optimizer = optim.Adam(net.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
@@ -73,13 +73,11 @@ def train(train_loader, net, criterion, optimizer, epoch):
 
         
         outputs = net(inputs)
-        loss_dict = criterion(outputs, labels)
+        out0, out1 = outputs
+        loss1 = criterion(out0, labels)
+        loss2 = criterion(out1, labels)
 
-        losses = sum(loss for loss in loss_dict.values())
-
-        # reduce losses over all GPUs for logging purposes
-        loss_dict_reduced = reduce_loss_dict(loss_dict)
-        losses_reduced = sum(loss for loss in loss_dict_reduced.values())
+        losses = loss1 + loss2
         optimizer.zero_grad()
         losses.backward()
         optimizer.step()
