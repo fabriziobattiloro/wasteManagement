@@ -81,7 +81,7 @@ def train(train_loader, net, criterion, optimizer, epoch):
         loss4 = criterion(out4, labels)
         loss5 = criterion(out5, labels)
 
-        losses = loss1 + loss2 + loss3 + loss 4 + loss5
+        losses = loss1 + loss2 + loss3 + loss4 + loss5
         optimizer.zero_grad()
         losses.backward()
         optimizer.step()
