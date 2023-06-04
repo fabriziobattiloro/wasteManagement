@@ -75,11 +75,10 @@ def train(train_loader, net, criterion, optimizer, epoch):
         out0, out1, out2 = outputs
 
         # Resize the labels tensor to match the output tensor dimensions
-        labels = labels.unsqueeze(1).expand_as(out0)
 
-        loss1 = criterion(out0, labels)
-        loss2 = criterion(out1, labels)
-        loss3 = criterion(out2, labels)
+        loss1 = criterion(out0, labels.unsqueeze(1).float())
+        loss2 = criterion(out1, labels.unsqueeze(1).float())
+        loss3 = criterion(out2, labels.unsqueeze(1).float())
 
         losses = loss1 + loss2 + loss3
         optimizer.zero_grad()
