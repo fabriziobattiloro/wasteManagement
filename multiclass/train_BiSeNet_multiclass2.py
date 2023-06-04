@@ -39,7 +39,7 @@ def main():
     torch.backends.cudnn.benchmark = True
 
     net = []  
-    net = BiSeNetV1() 
+    net = BiSeNetV1(cfg.DATA.NUM_CLASSES) 
 
     if len(cfg.TRAIN.GPU_ID)>1:
         net = torch.nn.DataParallel(net, device_ids=cfg.TRAIN.GPU_ID).cuda()
