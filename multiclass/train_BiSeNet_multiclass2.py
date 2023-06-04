@@ -72,14 +72,16 @@ def train(train_loader, net, criterion, optimizer, epoch):
         labels = Variable(labels).cuda()
 
         outputs = net(inputs)
-        out1, out2, out3= outputs
+        out1, out2, out3, out4, out5= outputs
         # Resize the labels tensor to match the output tensor dimensions
 
         loss1 = criterion(out1, labels)
         loss2 = criterion(out2, labels)
         loss3 = criterion(out3, labels)
+        loss4 = criterion(out4, labels)
+        loss5 = criterion(out5, labels)
 
-        losses = loss1 + loss2 + loss3
+        losses = loss1 + loss2 + loss3 + loss 4 + loss5
         optimizer.zero_grad()
         losses.backward()
         optimizer.step()
@@ -106,7 +108,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
         inputs = Variable(inputs, volatile=True).cuda()
         labels = Variable(labels, volatile=True).cuda()
         outputs = net(inputs)
-        out1, out2, out3= outputs
+        out1, out2, out3, out4, out5= outputs
 
         out1 = F.softmax(out1, dim=1)  # Apply softmax activation function along the channel dimension
         
