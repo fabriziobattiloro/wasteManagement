@@ -216,5 +216,5 @@ def get_bisenet_resnet18_citys(**kwargs):
 
 if __name__ == '__main__':
     img = torch.randn(2, 3, 224, 224)
-    model = BiSeNet(19, backbone='resnet18')
+    model = BiSeNet(5, backbone='resnet18')
     print(model.exclusive)
