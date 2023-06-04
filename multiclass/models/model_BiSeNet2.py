@@ -10,7 +10,7 @@ __all__ = ['BiSeNet', 'get_bisenet', 'get_bisenet_resnet18_citys']
 
 
 class BiSeNet(nn.Module):
-    def __init__(self, nclass, backbone='resnet18', aux=False, jpu=False, pretrained_base=False, **kwargs):
+    def __init__(self, nclass, backbone='resnet18', aux=True, jpu=True, pretrained_base=False, **kwargs):
         super(BiSeNet, self).__init__()
         self.aux = aux
         self.spatial_path = SpatialPath(3, 128, **kwargs)
