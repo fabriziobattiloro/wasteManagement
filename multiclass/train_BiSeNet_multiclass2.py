@@ -102,12 +102,12 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
         inputs = Variable(inputs, volatile=True).cuda()
         labels = Variable(labels, volatile=True).cuda()
         outputs = net(inputs)
-        out_aux, out_aux2, out_aux3, out_aux4, out_aux5= outputs
+        out1, out2= outputs
 
-        out = F.softmax(out_aux, dim=1)  # Apply softmax activation function along the channel dimension
+        out = F.softmax(out1, dim=1)  # Apply softmax activation function along the channel dimension
         
         # For each pixel, determine the class with highest probability
-        max_value, predicted = torch.max(out.data, 1)  
+        max_value, predicted = torch.max(out1.data, 1)  
         
         input_batches.append(inputs)
         output_batches.append(predicted)
