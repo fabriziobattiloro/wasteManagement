@@ -39,7 +39,7 @@ def main():
     torch.backends.cudnn.benchmark = True
 
     net = []  
-    net = BiSeNetV1(cfg.DATA.NUM_CLASSES) 
+    net = BiSeNetV1() 
 
     if len(cfg.TRAIN.GPU_ID)>1:
         net = torch.nn.DataParallel(net, device_ids=cfg.TRAIN.GPU_ID).cuda()
@@ -72,16 +72,14 @@ def train(train_loader, net, criterion, optimizer, epoch):
         labels = Variable(labels).cuda()
 
         outputs = net(inputs)
-        out1, out2, out3, out4, out5= outputs
+        out1, out2, out3= outputs
         # Resize the labels tensor to match the output tensor dimensions
 
         loss1 = criterion(out1, labels)
         loss2 = criterion(out2, labels)
         loss3 = criterion(out3, labels)
-        loss4 = criterion(out4, labels)
-        loss5 = criterion(out5, labels)
 
-        losses = loss1 + loss2 + loss3 + loss4 + loss5
+        losses = loss1 + loss2 + loss3
         optimizer.zero_grad()
         losses.backward()
         optimizer.step()
@@ -108,7 +106,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
         inputs = Variable(inputs, volatile=True).cuda()
         labels = Variable(labels, volatile=True).cuda()
         outputs = net(inputs)
-        out1, out2, out3, out4, out5= outputs
+        out1, out2, out3= outputs
 
         out1 = F.softmax(out1, dim=1)  # Apply softmax activation function along the channel dimension
         
