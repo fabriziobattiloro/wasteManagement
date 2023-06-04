@@ -73,6 +73,10 @@ def train(train_loader, net, criterion, optimizer, epoch):
 
         outputs = net(inputs)
         out0, out1, out2 = outputs
+
+        # Resize the labels tensor to match the output tensor dimensions
+        labels = labels.unsqueeze(1).expand_as(out0)
+
         loss1 = criterion(out0, labels)
         loss2 = criterion(out1, labels)
         loss3 = criterion(out2, labels)
@@ -81,6 +85,7 @@ def train(train_loader, net, criterion, optimizer, epoch):
         optimizer.zero_grad()
         losses.backward()
         optimizer.step()
+
 
 
 def validate(val_loader, net, criterion, optimizer, epoch, restore):
