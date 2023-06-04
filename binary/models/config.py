@@ -34,7 +34,7 @@ __C.TRAIN.PRETRAINED_ENCODER = '' # Path of the pretrained encoder
 
 # input setting
 
-__C.TRAIN.BATCH_SIZE = 32 #imgs
+__C.TRAIN.BATCH_SIZE = 64 #imgs
 __C.TRAIN.IMG_SIZE = (224,448)
 
 __C.TRAIN.GPU_ID = [0]
@@ -49,7 +49,7 @@ __C.TRAIN.NUM_EPOCH_LR_DECAY = 1 #epoches
 
 __C.TRAIN.WEIGHT_DECAY = 2e-4
 
-__C.TRAIN.MAX_EPOCH = 10
+__C.TRAIN.MAX_EPOCH = 100
 
 # output 
 __C.TRAIN.PRINT_FREQ = 4
@@ -70,7 +70,7 @@ __C.TRAIN.EXP_LOG_PATH = './logs'
 __C.TRAIN.EXP_PATH = './exp'
 
 #------------------------------VAL------------------------
-__C.VAL.BATCH_SIZE = 16 # imgs
+__C.VAL.BATCH_SIZE = 32 # imgs
 __C.VAL.SAMPLE_RATE = 1
 
 #------------------------------TEST------------------------
