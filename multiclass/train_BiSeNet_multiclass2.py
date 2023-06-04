@@ -47,7 +47,7 @@ def main():
         net=net.cuda()
 
     net.train()
-    criterion = MixSoftmaxCrossEntropyLoss()
+    criterion = torch.nn.CrossEntropyLoss()
     criterion.cuda()
 
     optimizer = optim.Adam(net.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
@@ -76,9 +76,9 @@ def train(train_loader, net, criterion, optimizer, epoch):
 
         # Resize the labels tensor to match the output tensor dimensions
 
-        loss1 = criterion(out0, labels.unsqueeze(1).float())
-        loss2 = criterion(out1, labels.unsqueeze(1).float())
-        loss3 = criterion(out2, labels.unsqueeze(1).float())
+        loss1 = criterion(out0, labels)
+        loss2 = criterion(out1, labels)
+        loss3 = criterion(out2, labels)
 
         losses = loss1 + loss2 + loss3
         optimizer.zero_grad()
