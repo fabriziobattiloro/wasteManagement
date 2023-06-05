@@ -114,9 +114,6 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
     net.train()
     criterion.cuda()  
 
-    print('[mean iu %.4f]' % (mean_iu)) 
-    net.train()
-    criterion.cuda()
 
 
 if __name__ == '__main__':
