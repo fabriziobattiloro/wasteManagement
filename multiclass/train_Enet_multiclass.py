@@ -12,11 +12,11 @@ import torchvision.transforms as standard_transforms
 import torchvision.utils as vutils
 from tensorboardX import SummaryWriter
 
-from model import ENet
-from config import cfg
-from loading_data import loading_data
-from utils import *
-from timer import Timer
+from models.model import ENet
+from models.config import cfg
+from models.loading_data import loading_data
+from models.utils import *
+from models.timer import Timer
 import pdb
 
 exp_name = cfg.TRAIN.EXP_NAME
