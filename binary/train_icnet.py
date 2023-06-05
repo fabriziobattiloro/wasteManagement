@@ -72,15 +72,15 @@ def train(train_loader, net, criterion, optimizer, epoch):
         out0, out1, out2, out3 = outputs
 
         loss0 = criterion(out0, labels.unsqueeze(1).float())
-        loss1 = criterion(out1, labels.unsqueeze(1).float())
-        loss2 = criterion(out2, labels.unsqueeze(1).float())
-        loss3 = criterion(out3, labels.unsqueeze(1).float())
+        #loss1 = criterion(out1, labels.unsqueeze(1).float())
+        #loss2 = criterion(out2, labels.unsqueeze(1).float())
+        #loss3 = criterion(out3, labels.unsqueeze(1).float())
         
-        loss= loss0+loss1+loss2+loss3
+        #loss= loss0+loss1+loss2+loss3
 
         # reduce losses over all GPUs for logging purposes
         optimizer.zero_grad()
-        loss.backward()
+        loss0.backward()
         optimizer.step()
 
 def validate(val_loader, net, criterion, optimizer, epoch, restore):
