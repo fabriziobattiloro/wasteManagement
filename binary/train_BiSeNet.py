@@ -37,7 +37,7 @@ def main():
     torch.backends.cudnn.benchmark = True
 
     net = []   
-    net = BiSeNetV2( cfg.DATA.NUM_CLASSES)
+    net = BiSeNet( cfg.DATA.NUM_CLASSES)
     
 
     if len(cfg.TRAIN.GPU_ID)>1:
