@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .segbase import SegBaseModel
+from models.segbase import SegBaseModel
 
 __all__ = ['ICNet', 'get_icnet', 'get_icnet_resnet50_citys',
            'get_icnet_resnet101_citys', 'get_icnet_resnet152_citys']
