@@ -71,7 +71,6 @@ def train(train_loader, net, criterion, optimizer, epoch):
         inputs = Variable(inputs).cuda()
         labels = Variable(labels).cuda()
 
-        
         outputs = net(inputs)
         out1, out2, out3= outputs
         # Resize the labels tensor to match the output tensor dimensions
@@ -84,6 +83,7 @@ def train(train_loader, net, criterion, optimizer, epoch):
         optimizer.zero_grad()
         losses.backward()
         optimizer.step()
+
 
 
 def validate(val_loader, net, criterion, optimizer, epoch, restore):

@@ -3,14 +3,14 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .resnet import resnet18
-from .basic import _ConvBNReLU
+from models.resnet import resnet18
+from models.basic import _ConvBNReLU
 
 __all__ = ['BiSeNet', 'get_bisenet', 'get_bisenet_resnet18_citys']
 
 
 class BiSeNet(nn.Module):
-    def __init__(self, nclass, backbone='resnet18', aux=False, jpu=False, pretrained_base=False, **kwargs):
+    def __init__(self, nclass, backbone='resnet18', aux=True, jpu=True, pretrained_base=False, **kwargs):
         super(BiSeNet, self).__init__()
         self.aux = aux
         self.spatial_path = SpatialPath(3, 128, **kwargs)
@@ -216,5 +216,5 @@ def get_bisenet_resnet18_citys(**kwargs):
 
 if __name__ == '__main__':
     img = torch.randn(2, 3, 224, 224)
-    model = BiSeNet(19, backbone='resnet18')
+    model = BiSeNet(5, backbone='resnet18')
     print(model.exclusive)
