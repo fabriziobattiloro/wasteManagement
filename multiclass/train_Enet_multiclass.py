@@ -125,6 +125,10 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
     print(f"Class 3: {mean_classe3 / len(val_loader):.4f}")
     print(f"Class 4: {mean_classe4 / len(val_loader):.4f}")
     print(f"Class tot: {mean_tot / len(val_loader):.4f}")
+    
+    net.train()
+    criterion.cuda()
+
 
 
 if __name__ == '__main__':
