@@ -11,7 +11,7 @@ import torchvision.transforms as standard_transforms
 import torchvision.utils as vutils
 from tensorboardX import SummaryWriter
 
-from models.model_BiSeNet2 import BiSeNetV2
+from models.model_BiSeNet2 import BiSeNet
 from models.config import cfg, __C
 from models.loading_data import loading_data
 from models.utils import *
