@@ -230,7 +230,7 @@ def reduce_loss_dict(loss_dict):
 
 def calculate_samples_per_class(dataset):
     # Step 2: Retrieve the class labels
-    class_labels = dataset[1]
+    class_labels = dataset[2]
 
     # Step 3: Count the samples per class
     samples_per_class = {}
