@@ -48,9 +48,8 @@ def main():
 
     net.train()
     #criterion = torch.nn.CrossEntropyLoss()
-    #criterion = CustomLoss()
-    focal_loss_criterion = FocalLossV2(alpha=0.25, gamma=2, reduction='mean')
-    criterion = focal_loss_criterion()
+    criterion = CustomLoss()
+    #criterion = FocalLossV2(alpha=0.25, gamma=2, reduction='mean')
     criterion.cuda()
 
     optimizer = optim.Adam(net.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
