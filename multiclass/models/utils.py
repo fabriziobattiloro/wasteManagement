@@ -228,5 +228,27 @@ def reduce_loss_dict(loss_dict):
         reduced_losses = {k: v for k, v in zip(loss_names, all_losses)}
     return reduced_losses
 
+def calculate_samples_per_class(dataset):
+    # Step 2: Retrieve the class labels
+    class_labels = [sample['label'] for sample in dataset]
+
+    # Step 3: Count the samples per class
+    samples_per_class = {}
+    for label in class_labels:
+        if label in samples_per_class:
+            samples_per_class[label] += 1
+        else:
+            samples_per_class[label] = 1
+
+    # Step 4: Calculate the samples per class
+    count_vector = []
+    for label in samples_per_class:
+        count = samples_per_class[label]
+        count_vector.append(count)
+        print("Class:", label, "Count:", count)
+
+    return count_vector
+
+
 
 
