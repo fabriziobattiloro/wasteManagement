@@ -58,7 +58,7 @@ def main():
     validate(val_loader, net, criterion, optimizer, -1, restore_transform)
     for epoch in range(cfg.TRAIN.MAX_EPOCH):
         _t['train time'].tic()
-        train(train_loader, net, criterion, optimizer, epoch)
+        train(train_loader, net, criterion, optimizer, epoch, awl)
         _t['train time'].toc(average=False)
         print('training time of one epoch: {:.2f}s'.format(_t['train time'].diff))
         _t['val time'].tic()
@@ -67,7 +67,7 @@ def main():
         print('val time of one epoch: {:.2f}s'.format(_t['val time'].diff))
 
 
-def train(train_loader, net, criterion, optimizer, epoch):
+def train(train_loader, net, criterion, optimizer, epoch, awl):
     for i, data in enumerate(train_loader, 0):
         inputs, labels = data
         inputs = Variable(inputs).cuda()
