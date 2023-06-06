@@ -16,7 +16,7 @@ from models.model_BiSeNet2 import BiSeNet
 from models.config import cfg, __C
 from models.loading_data import loading_data
 from models.utils import *
-from models.utils import AutomaticWeightedLoss
+from models.loss import AutomaticWeightedLoss
 from models.timer import Timer
 from models.loss import MixSoftmaxCrossEntropyLoss
 import pdb
