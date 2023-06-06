@@ -2,7 +2,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from config import cfg, __C
+from models.config import cfg, __C
 
 
 from torch.autograd import Variable
