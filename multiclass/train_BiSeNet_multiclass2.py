@@ -16,6 +16,7 @@ from models.model_BiSeNet2 import BiSeNet
 from models.config import cfg, __C
 from models.loading_data import loading_data
 from models.utils import *
+from model.utils import AutomaticWeightedLoss
 from models.timer import Timer
 from models.loss import MixSoftmaxCrossEntropyLoss
 import pdb
@@ -47,6 +48,7 @@ def main():
         net=net.cuda()
 
     net.train()
+    awl = AutomaticWeightedLoss(2)
     criterion = torch.nn.CrossEntropyLoss()
     criterion.cuda()
 
@@ -73,13 +75,12 @@ def train(train_loader, net, criterion, optimizer, epoch):
 
         
         outputs = net(inputs)
-        #out0, out1 = outputs
-        loss1 = criterion(outputs, labels)
-        #loss2 = criterion(out1, labels)
-
-        losses = loss1 #+ loss2
+        out0, out1 = outputs
+        loss1 = criterion(out0, labels)
+        loss2 = criterion(out1, labels)
+        loss_awl = awl(loss1, loss2)
         optimizer.zero_grad()
-        losses.backward()
+        loss_awl.backward()
         optimizer.step()
 
 
