@@ -76,8 +76,12 @@ def train(train_loader, net, criterion, optimizer, epoch):
 
         
         outputs = net(inputs)
-        out0, out1 = outputs
+        #out0, out1 = outputs
         #loss1 = criterion(outputs, labels)
+        if len(outputs) == 1:
+            out1 = outputs[0]
+        else:
+            out1, _ = outputs
         loss2 = criterion(out1, labels)
 
         losses = loss2 #+ loss1
