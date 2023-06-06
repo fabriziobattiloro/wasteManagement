@@ -82,6 +82,6 @@ class MixSoftmaxCrossEntropyLoss(nn.CrossEntropyLoss):
         return loss_sum
 
 if __name__ == '__main__':
-    awl = AutomaticWeightedLoss(2)
+    awl = AutomaticWeightedLoss(3)
     print(awl.parameters())
 
