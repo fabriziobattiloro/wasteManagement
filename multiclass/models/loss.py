@@ -70,7 +70,7 @@ class MixSoftmaxCrossEntropyLoss(nn.CrossEntropyLoss):
         awl = AutomaticWeightedLoss(2)
         loss_sum = awl(loss1, loss2)
     """
-    def __init__(self, num=2):
+    def __init__(self, num=3):
         super(AutomaticWeightedLoss, self).__init__()
         params = torch.ones(num, requires_grad=True)
         self.params = torch.nn.Parameter(params)
