@@ -75,7 +75,7 @@ def train(train_loader, net, criterion, optimizer, epoch):
 
         
         outputs = net(inputs)
-        out0, out1, ou2 = outputs
+        out0, out1, out2 = outputs
         loss0 = criterion(out0, labels)
         loss1 = criterion(out1, labels)
         loss2 = criterion(out2, labels)
