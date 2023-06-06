@@ -58,7 +58,7 @@ class MixSoftmaxCrossEntropyLoss(nn.CrossEntropyLoss):
             return dict(loss=super(MixSoftmaxCrossEntropyLoss, self).forward(*inputs))
 
         
-        class AutomaticWeightedLoss(nn.Module):
+ class AutomaticWeightedLoss(nn.Module):
     """automatically weighted multi-task loss
 
     Params：
