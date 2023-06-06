@@ -48,10 +48,9 @@ def main():
 
     net.train()
     criterion = torch.nn.CrossEntropyLoss()
-    #criterion = CustomLoss()
-    #criterion = FocalLossV2(alpha=0.25, gamma=2, reduction='mean')
     criterion.cuda()
 
+   
     optimizer = optim.Adam(net.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
     scheduler = StepLR(optimizer, step_size=cfg.TRAIN.NUM_EPOCH_LR_DECAY, gamma=cfg.TRAIN.LR_DECAY)
     _t = {'train time' : Timer(),'val time' : Timer()} 
@@ -73,7 +72,6 @@ def train(train_loader, net, criterion, optimizer, epoch):
         inputs = Variable(inputs).cuda()
         labels = Variable(labels).cuda()
 
-        
         outputs = net(inputs)
         out1, out2, out3= outputs
         # Resize the labels tensor to match the output tensor dimensions
@@ -86,6 +84,7 @@ def train(train_loader, net, criterion, optimizer, epoch):
         optimizer.zero_grad()
         losses.backward()
         optimizer.step()
+
 
 
 def validate(val_loader, net, criterion, optimizer, epoch, restore):
@@ -113,7 +112,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
         out1 = F.softmax(out1, dim=1)  # Apply softmax activation function along the channel dimension
         
         # For each pixel, determine the class with highest probability
-        max_value, predicted = torch.max(outputs.data, 1)  
+        max_value, predicted = torch.max(out1.data, 1)  
         
         input_batches.append(inputs)
         output_batches.append(predicted)
@@ -146,11 +145,3 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
-
-
