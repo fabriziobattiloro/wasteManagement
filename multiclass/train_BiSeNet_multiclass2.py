@@ -47,9 +47,9 @@ def main():
         net=net.cuda()
 
     net.train()
-    criterion = torch.nn.CrossEntropyLoss()
+    #criterion = torch.nn.CrossEntropyLoss()
     #criterion = CustomLoss()
-    #criterion = FocalLossV2(alpha=0.25, gamma=2, reduction='mean')
+    criterion = FocalLossV2(alpha=0.25, gamma=2, reduction='mean')
     criterion.cuda()
 
     optimizer = optim.Adam(net.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
@@ -75,11 +75,11 @@ def train(train_loader, net, criterion, optimizer, epoch):
 
         
         outputs = net(inputs)
-        #out0, out1 = outputs
-        loss1 = criterion(outputs, labels)
-        #loss2 = criterion(out1, labels)
+        out0, out1, out2 = outputs
+        #loss1 = criterion(outputs, labels)
+        loss2 = criterion(out0, labels)
 
-        losses = loss1 #+ loss2
+        losses = loss2 #+ loss2
         optimizer.zero_grad()
         losses.backward()
         optimizer.step()
