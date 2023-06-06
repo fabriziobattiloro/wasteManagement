@@ -40,6 +40,13 @@ def main():
 
     net = []  
     net = BiSeNet(cfg.DATA.NUM_CLASSES) 
+    
+    train_dataset = train_loader.dataset
+    sample_per_class_train = calculate_samples_per_class(train_dataset)
+    
+    val_dataset = val_loader.dataset
+    sample_per_class_train = calculate_samples_per_class(val_dataset)
+
 
     if len(cfg.TRAIN.GPU_ID)>1:
         net = torch.nn.DataParallel(net, device_ids=cfg.TRAIN.GPU_ID).cuda()
