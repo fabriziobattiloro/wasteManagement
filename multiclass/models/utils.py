@@ -152,7 +152,7 @@ class FocalLoss(nn.Module):
         logpt = F.log_softmax(input)
         logpt = logpt.gather(1,target)
         logpt = logpt.view(-1)
-        pt = Variable(logpt.data.exp())
+        pt = callable(logpt.data.exp())
 
         if self.alpha is not None:
             if self.alpha.type()!=input.data.type():
