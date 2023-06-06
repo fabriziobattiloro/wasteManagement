@@ -47,14 +47,6 @@ class CrossEntropyLoss2d(nn.Module):
 
     def forward(self, inputs, targets):
         return self.nll_loss(F.log_softmax(inputs, dim=-1), targets)
-#CustomLoss
-class CustomLoss(nn.Module):
-    def __init__(self, weight=None, size_average=True):
-        super(CustomLoss, self).__init__()
-        self.nll_loss = nn.NLLLoss(weight, size_average)
-
-    def forward(self, inputs, targets):
-        return self.nll_loss(F.log_softmax(inputs, dim=1), targets)
 
 #Focal loss
 
@@ -227,6 +219,33 @@ def reduce_loss_dict(loss_dict):
             all_losses /= world_size
         reduced_losses = {k: v for k, v in zip(loss_names, all_losses)}
     return reduced_losses
+#weighted loss
+class AutomaticWeightedLoss(nn.Module):
+    """automatically weighted multi-task loss
+
+    Params：
+        num: int，the number of loss
+        x: multi-task loss
+    Examples：
+        loss1=1
+        loss2=2
+        awl = AutomaticWeightedLoss(2)
+        loss_sum = awl(loss1, loss2)
+    """
+    def __init__(self, num=2):
+        super(AutomaticWeightedLoss, self).__init__()
+        params = torch.ones(num, requires_grad=True)
+        self.params = torch.nn.Parameter(params)
+
+    def forward(self, *x):
+        loss_sum = 0
+        for i, loss in enumerate(x):
+            loss_sum += 0.5 / (self.params[i] ** 2) * loss + torch.log(1 + self.params[i] ** 2)
+        return loss_sum
+
+if __name__ == '__main__':
+    awl = AutomaticWeightedLoss(2)
+    print(awl.parameters())
 
 
 
