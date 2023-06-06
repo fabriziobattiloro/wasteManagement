@@ -75,14 +75,14 @@ def train(train_loader, net, criterion, optimizer, epoch):
 
         
         outputs = net(inputs)
-        #out0, out1, out2 = outputs
-        #loss0 = criterion(out0, labels)
-        #loss1 = criterion(out1, labels)
-        #loss2 = criterion(out2, labels)
-        loss1 = criterion(outputs, labels)
-        #loss2 = criterion(out0, labels)
+        out1, out2, out3= outputs
+        # Resize the labels tensor to match the output tensor dimensions
 
-        losses = loss1 #+ loss1 + loss2
+        loss1 = criterion(out1, labels)
+        loss2 = criterion(out2, labels)
+        loss3 = criterion(out3, labels)
+
+        losses = loss1 + loss2 + loss3
         optimizer.zero_grad()
         losses.backward()
         optimizer.step()
