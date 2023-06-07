@@ -22,7 +22,7 @@ def loading_data():
     ])
     val_simul_transform = own_transforms.Compose([
         own_transforms.Scale(int(cfg.TRAIN.IMG_SIZE[0] / 0.875)),
-        own_transforms.CenterCrop(cfg.TRAIN.IMG_SIZE)
+        own_transforms.CenterCrop(cfg.TRAIN.IMG_SIZE),
         #new
         Resize((256, 256))
     ])
