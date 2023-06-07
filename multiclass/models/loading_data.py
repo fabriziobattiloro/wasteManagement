@@ -4,17 +4,13 @@ import models.transforms as own_transforms
 from .resortit import resortit
 from .config import cfg
 
-import PIL.Image
-
 def loading_data():
-    # Assuming `image_np` is a NumPy array
-    image_pil = PIL.Image.fromarray(image_np)
     mean_std = cfg.DATA.MEAN_STD
     train_simul_transform = own_transforms.Compose([
         own_transforms.Scale(int(cfg.TRAIN.IMG_SIZE[0] / 0.875)),
         own_transforms.RandomCrop(cfg.TRAIN.IMG_SIZE),
         own_transforms.RandomHorizontallyFlip(),
-        own_transforms.ColorJitter()
+        own_transforms.ColorJitter(brightness=0.2, contrast=0.3, saturation=0.4, hue=0.1)
 
     ])
     val_simul_transform = own_transforms.Compose([
