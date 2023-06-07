@@ -33,6 +33,7 @@ def calculate_mean_iu(predictions, gts, num_classes):
             t_i += np.sum(gt == i)
             sum_n_ji += np.sum(p == i)
         mean_i = float(n_ii) / (t_i + sum_n_ji - n_ii)
+        print(t_i)
         mean_classes.append(mean_i)
     #mean_classes.append(sum_iu / num_classes)
     mean_tot = sum(mean_classes) / num_classes  # Calcola la media delle classi totali correttamente

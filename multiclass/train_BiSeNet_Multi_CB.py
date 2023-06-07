@@ -39,8 +39,6 @@ def main():
     torch.backends.cudnn.benchmark = True
 
     dataset = train_loader.dataset
-    pixel_counts = calculate_class_pixel_counts(dataset)
-    print(pixel_counts)
 
     net = []  
     net = BiSeNet(cfg.DATA.NUM_CLASSES) 
@@ -51,7 +49,7 @@ def main():
         net=net.cuda()
 
     net.train()
-    criterion = CB_Loss(pixel_counts)
+    criterion = CB_Loss([50, 50, 50, 50, 50])
     criterion.cuda()
 
    
