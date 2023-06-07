@@ -100,6 +100,7 @@ def focal_loss(logits, labels, alpha=None, gamma=2):
     focal_loss /= torch.sum(labels)
     return focal_loss
 
+import numpy as np
 
 class CB_Loss(torch.nn.Module):
     def __init__(
