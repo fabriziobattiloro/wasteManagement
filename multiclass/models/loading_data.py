@@ -24,7 +24,7 @@ def loading_data():
         own_transforms.Scale(int(cfg.TRAIN.IMG_SIZE[0] / 0.875)),
         own_transforms.CenterCrop(cfg.TRAIN.IMG_SIZE)
         #new
-        Resize((256, 256))
+        Resize((256, 256)),
     ])
     img_transform = standard_transforms.Compose([
         standard_transforms.ToTensor(),
