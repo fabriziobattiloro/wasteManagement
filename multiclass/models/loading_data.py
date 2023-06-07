@@ -14,9 +14,9 @@ def loading_data():
     train_simul_transform = own_transforms.Compose([
         own_transforms.Scale(int(cfg.TRAIN.IMG_SIZE[0] / 0.875)),
         own_transforms.RandomCrop(cfg.TRAIN.IMG_SIZE),
-        own_transforms.RandomHorizontallyFlip()
+        own_transforms.RandomHorizontallyFlip(),
         #new
-        RandomRotation(30)
+        RandomRotation(30),
         ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1)
 
     ])
@@ -24,7 +24,7 @@ def loading_data():
         own_transforms.Scale(int(cfg.TRAIN.IMG_SIZE[0] / 0.875)),
         own_transforms.CenterCrop(cfg.TRAIN.IMG_SIZE)
         #new
-        Resize((256, 256)),
+        Resize((256, 256))
     ])
     img_transform = standard_transforms.Compose([
         standard_transforms.ToTensor(),
