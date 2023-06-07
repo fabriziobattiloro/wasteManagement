@@ -171,7 +171,7 @@ class Encoder(nn.Module):
         layers.append(InitialBlock())
         layers.append(BottleNeck(16, 64, regularlizer_prob=0.01,
                                  downsampling=True))
-        for i in range(8):
+        for i in range(2):
             layers.append(BottleNeck(64, 64, regularlizer_prob=0.01))
         
         # Section 2 and 3
