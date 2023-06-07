@@ -17,7 +17,7 @@ from models.config import cfg, __C
 from models.loading_data import loading_data
 from models.utils import *
 from models.timer import Timer
-from models.loss import CB_loss
+from models.loss import CB_Loss
 import pdb
 
 exp_name = cfg.TRAIN.EXP_NAME
@@ -38,15 +38,12 @@ def main():
         torch.cuda.set_device(cfg.TRAIN.GPU_ID[0])
     torch.backends.cudnn.benchmark = True
 
+    dataset = train_loader.dataset
+    pixel_counts = calculate_class_pixel_counts(dataset)
+    print(pixel_counts)
+
     net = []  
     net = BiSeNet(cfg.DATA.NUM_CLASSES) 
-
-    train_dataset = train_loader.dataset
-    sample_per_class_train = calculate_samples_per_class(train_dataset)
-    
-    val_dataset = val_loader.dataset
-    sample_per_class_train = calculate_samples_per_class(val_dataset)
-
 
     if len(cfg.TRAIN.GPU_ID)>1:
         net = torch.nn.DataParallel(net, device_ids=cfg.TRAIN.GPU_ID).cuda()
@@ -54,22 +51,17 @@ def main():
         net=net.cuda()
 
     net.train()
-    criterion = torch.nn.CrossEntropyLoss()
+    criterion = CB_Loss(pixel_counts)
     criterion.cuda()
 
-    train_dataset = train_loader.dataset
-    sample_per_class_train = calculate_samples_per_class(train_dataset)
-    
-    val_dataset = val_loader.dataset
-    sample_per_class_val = calculate_samples_per_class(val_dataset)
-
+   
     optimizer = optim.Adam(net.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
     scheduler = StepLR(optimizer, step_size=cfg.TRAIN.NUM_EPOCH_LR_DECAY, gamma=cfg.TRAIN.LR_DECAY)
     _t = {'train time' : Timer(),'val time' : Timer()} 
-    validate(val_loader, net, sample_per_class_val, optimizer, -1, restore_transform)
+    validate(val_loader, net, criterion, optimizer, -1, restore_transform)
     for epoch in range(cfg.TRAIN.MAX_EPOCH):
         _t['train time'].tic()
-        train(train_loader, net, sample_per_class_train, optimizer, epoch)
+        train(train_loader, net, criterion, optimizer, epoch)
         _t['train time'].toc(average=False)
         print('training time of one epoch: {:.2f}s'.format(_t['train time'].diff))
         _t['val time'].tic()
@@ -78,7 +70,7 @@ def main():
         print('val time of one epoch: {:.2f}s'.format(_t['val time'].diff))
 
 
-def train(train_loader, net, sample_per_class_train, optimizer, epoch):
+def train(train_loader, net, criterion, optimizer, epoch):
     for i, data in enumerate(train_loader, 0):
         inputs, labels = data
         inputs = Variable(inputs).cuda()
@@ -88,9 +80,9 @@ def train(train_loader, net, sample_per_class_train, optimizer, epoch):
         out1, out2, out3= outputs
         # Resize the labels tensor to match the output tensor dimensions
 
-        loss1 = CB_loss(labels, out1, sample_per_class_train, cfg.DATA.NUM_CLASSES, "focal", 0.999, 2.0)
-        loss2 = CB_loss(labels, out2, sample_per_class_train, cfg.DATA.NUM_CLASSES, "focal", 0.999, 2.0)
-        loss3 = CB_loss(labels, out3, sample_per_class_train, cfg.DATA.NUM_CLASSES, "focal", 0.999, 2.0)
+        loss1 = criterion(out1, labels)
+        loss2 = criterion(out2, labels)
+        loss3 = criterion(out3, labels)
 
         losses = loss1 + loss2 + loss3
         optimizer.zero_grad()
@@ -99,8 +91,9 @@ def train(train_loader, net, sample_per_class_train, optimizer, epoch):
 
 
 
-def validate(val_loader, net, sample_per_class_val, optimizer, epoch, restore):
+def validate(val_loader, net, criterion, optimizer, epoch, restore):
     net.eval()
+    criterion.cpu()
     input_batches = []
     output_batches = []
     label_batches = []
@@ -151,6 +144,8 @@ def validate(val_loader, net, sample_per_class_val, optimizer, epoch, restore):
     #print(f"Mean IoU: {mean_iou:.4f}")
 
     net.train()
+    criterion.cuda()
+
 
 if __name__ == '__main__':
     main()

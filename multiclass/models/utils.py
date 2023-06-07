@@ -228,26 +228,19 @@ def reduce_loss_dict(loss_dict):
         reduced_losses = {k: v for k, v in zip(loss_names, all_losses)}
     return reduced_losses
 
-def calculate_samples_per_class(dataset):
-    # Step 2: Retrieve the class labels
-    class_labels = dataset[2]
+def calculate_class_pixel_counts(dataset):
+    class_counts = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0}
 
-    # Step 3: Count the samples per class
-    samples_per_class = {}
-    for label in class_labels:
-        if label in samples_per_class:
-            samples_per_class[label] += 1
-        else:
-            samples_per_class[label] = 1
+    # Step 2
+    for image in dataset:
+        ground_truth_label = image.get_ground_truth_label()
+        pixel_counts = np.bincount(image.pixels.flatten())  # Assuming image.pixels contains the class labels for each pixel
 
-    # Step 4: Calculate the samples per class
-    count_vector = []
-    for label in samples_per_class:
-        count = samples_per_class[label]
-        count_vector.append(count)
-        print("Class:", label, "Count:", count)
+        for class_label, count in enumerate(pixel_counts):
+            class_counts[class_label] += count
 
-    return count_vector
+    return [class_counts[label] for label in range(5)]  # Return the pixel counts in the specified order [0, 1, 2, 3, 4]
+
 
 
 
