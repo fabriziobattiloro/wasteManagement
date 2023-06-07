@@ -12,7 +12,9 @@ class Compose(object):
 
     def __call__(self, img, mask):
         for t in self.transforms:
-            img, mask = t(img, mask)
+            #img, mask = t(img, mask)
+            img = t(img)
+            mask = t(mask)
         return img, mask
 
 
