@@ -12,8 +12,8 @@ def loading_data():
         own_transforms.RandomHorizontallyFlip(),
         own_transforms.RandomVerticallyFlip(),
         own_transforms.RandomRotation(45),
-        own_transforms.CenterCrop(cfg.TRAIN.IMG_SIZE),
-        own_transforms.FreeScale((int(cfg.TRAIN.IMG_SIZE[0] / 0.875), int(cfg.TRAIN.IMG_SIZE[0] / 0.875)))
+        own_transforms.CenterCrop(cfg.TRAIN.IMG_SIZE)
+        #own_transforms.FreeScale((int(cfg.TRAIN.IMG_SIZE[0] / 0.875), int(cfg.TRAIN.IMG_SIZE[0] / 0.875)))
     ])
     val_simul_transform = own_transforms.Compose([
         own_transforms.Scale(int(cfg.TRAIN.IMG_SIZE[0] / 0.875)),
