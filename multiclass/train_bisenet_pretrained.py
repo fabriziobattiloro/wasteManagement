@@ -14,7 +14,7 @@ import torch.nn.functional as F
 
 from models.model_BiSeNet2 import BiSeNet
 from models.config import cfg, __C
-from models.loading_data import loading_data
+from models.loading_data import loading_data, loading_rotated_data
 from models.utils import *
 from models.timer import Timer
 from models.loss import MixSoftmaxCrossEntropyLoss
@@ -26,7 +26,7 @@ writer = SummaryWriter(cfg.TRAIN.EXP_PATH+ '/' + exp_name)
 
 pil_to_tensor = standard_transforms.ToTensor()
 train_loader, val_loader, restore_transform = loading_data()
-train_loader_rotated = generate_rotated_train_loader(train_loader)
+train_loader_rotated, val_loader_rotated, restore_transform_rotated = loading_rotated_data()
 
 def main():
 

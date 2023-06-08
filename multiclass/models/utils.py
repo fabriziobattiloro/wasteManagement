@@ -272,7 +272,6 @@ def generate_rotated_train_loader(train_loader):
     rotated_train_loader = torch.utils.data.DataLoader(
         transformed_train_loader,
         batch_size=train_loader.batch_size,
-        shuffle=train_loader.shuffle,
         num_workers=train_loader.num_workers,
         collate_fn=train_loader.collate_fn
     )
