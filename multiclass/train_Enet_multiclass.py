@@ -100,7 +100,6 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
     mean_classe3 = 0
     mean_classe4 = 0
     mean_tot = 0
-    net.cuda()
     for vi, data in enumerate(val_loader, 0):
         inputs, labels = data
         inputs = Variable(inputs, volatile=True).cuda()
