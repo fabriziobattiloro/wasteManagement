@@ -26,7 +26,7 @@ class InitialBlock(nn.Module):
 
     def forward(self, input):
         output = torch.cat([
-            self.prelu(self.batch_norm(self.conv(input))), self.pool(input)
+            self.prelu(self.batch_norm(self.conv(input.cpu()))), self.pool(input)
         ], 1)
         return output
 
@@ -202,7 +202,7 @@ class Encoder(nn.Module):
                 output, pooling_indices = layer(output)
                 pooling_stack.append(pooling_indices)
             else:
-                output = layer(output.cpu())
+                output = layer(output)
 
         if self.state:
             output = F.upsample(output, cfg.TRAIN.IMG_SIZE, None, 'bilinear')
