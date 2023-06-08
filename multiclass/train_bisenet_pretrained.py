@@ -71,7 +71,7 @@ def main():
         _t['val time'].toc(average=False)
         print('val time of one epoch: {:.2f}s'.format(_t['val time'].diff))
 
-def self_supervised_pretrain(train_loader, net, criterion, optimizer, epoch):
+def self_supervised_pretrain(train_loader, net, criterion_pretrained, optimizer, epoch):
     total_loss = 0.0
 
     for i, data in enumerate(train_loader, 0):
@@ -83,9 +83,9 @@ def self_supervised_pretrain(train_loader, net, criterion, optimizer, epoch):
         out1, out2, out3= outputs
         # Resize the labels tensor to match the output tensor dimensions
 
-        loss1 = criterion(out1, labels)
-        loss2 = criterion(out2, labels)
-        loss3 = criterion(out3, labels)
+        loss1 = criterion_pretrained(out1, labels)
+        loss2 = criterion_pretrained(out2, labels)
+        loss3 = criterion_pretrained(out3, labels)
 
         losses = loss1 + loss2 + loss3
         optimizer.zero_grad()
@@ -140,7 +140,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
         outputs = net(inputs)
         out1, out2, out3 = outputs
 
-        out1 = F.softmax(out1, dim=1)  # Apply softmax activation function along the channel dimension
+        #out1 = F.softmax(out1, dim=1)  # Apply softmax activation function along the channel dimension
         
         # For each pixel, determine the class with highest probability
         max_value, predicted = torch.max(out1.data, 1)  
