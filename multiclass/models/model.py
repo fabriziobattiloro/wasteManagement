@@ -1,4 +1,4 @@
-from .config import cfg
+from config import cfg
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -19,14 +19,14 @@ class InitialBlock(nn.Module):
 
     def __init__(self):
         super(InitialBlock, self).__init__()
-        self.conv = nn.Conv2d(3.cpu(), 13.cpu(), (3, 3), stride=2, padding=1)
+        self.conv = nn.Conv2d(3, 13, (3, 3), stride=2, padding=1)
         self.batch_norm = nn.BatchNorm2d(13, 1e-3)
         self.prelu = nn.PReLU(13)
         self.pool = nn.MaxPool2d(2, stride=2)
 
     def forward(self, input):
         output = torch.cat([
-            self.prelu(self.batch_norm(self.conv(input.cpu()))), self.pool(input)
+            self.prelu(self.batch_norm(self.conv(input))), self.pool(input)
         ], 1)
         return output
 
@@ -176,7 +176,7 @@ class Encoder(nn.Module):
         
         # Section 2 and 3
         layers.append(BottleNeck(64, 128, downsampling=True))
-        for i in range(4):
+        for i in range(2):
             layers.append(BottleNeck(128, 128))
             layers.append(BottleNeck(128, 128, dilated=True, dilation_rate=2))
             layers.append(BottleNeck(128, 128, asymmetric=True))
