@@ -103,8 +103,8 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
 
     for vi, data in enumerate(val_loader, 0):
         inputs, labels = data
-        inputs = Variable(inputs, volatile=True).cuda()
-        labels = Variable(labels, volatile=True).cuda()
+        inputs = Variable(inputs, volatile=True)
+        labels = Variable(labels, volatile=True)
         outputs = net(inputs)
         
         out = F.softmax(outputs, dim=1)  # Apply softmax activation function along the channel dimension
