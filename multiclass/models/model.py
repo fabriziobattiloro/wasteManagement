@@ -245,7 +245,7 @@ class ENet(nn.Module):
         self.decoder = Decoder(cfg.DATA.NUM_CLASSES)
 
     def forward(self, input):
-        output, pooling_stack = self.encoder(input)
+        output, pooling_stack = self.encoder(input.cpu())
         if not self.state:
             output = self.decoder(output, pooling_stack)
         return output
