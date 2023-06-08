@@ -202,7 +202,7 @@ class Encoder(nn.Module):
                 output, pooling_indices = layer(output)
                 pooling_stack.append(pooling_indices)
             else:
-                output = layer(output)
+                output = layer(output.cpu())
 
         if self.state:
             output = F.upsample(output, cfg.TRAIN.IMG_SIZE, None, 'bilinear')
@@ -245,7 +245,7 @@ class ENet(nn.Module):
         self.decoder = Decoder(cfg.DATA.NUM_CLASSES)
 
     def forward(self, input):
-        output, pooling_stack = self.encoder(input.cpu())
+        output, pooling_stack = self.encoder(input)
         if not self.state:
             output = self.decoder(output, pooling_stack)
         return output
