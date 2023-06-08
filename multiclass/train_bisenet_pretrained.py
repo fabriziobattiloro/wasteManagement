@@ -4,7 +4,7 @@ import random
 import torch
 from torch import optim
 from torch.autograd import Variable
-import torch.nn.functional as F
+import torch.nn.functional as softmax
 from torch.nn import NLLLoss2d
 from torch.optim.lr_scheduler import StepLR
 from torchvision.utils import save_image
@@ -141,7 +141,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
         outputs = net(inputs)
         out1, out2, out3 = outputs
 
-        out1 = F.softmax(out1, dim=1)  # Apply softmax activation function along the channel dimension
+        out1 = softmax(out1, dim=1)  # Apply softmax activation function along the channel dimension
         
         # For each pixel, determine the class with highest probability
         max_value, predicted = torch.max(out1.data, 1)  
