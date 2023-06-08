@@ -59,8 +59,9 @@ def main():
     scheduler = StepLR(optimizer, step_size=cfg.TRAIN.NUM_EPOCH_LR_DECAY, gamma=cfg.TRAIN.LR_DECAY)
     _t = {'train time' : Timer(),'val time' : Timer()} 
     validate(val_loader, net, criterion, optimizer, -1, restore_transform)
-    for epoch in range(cfg.TRAIN.MAX_EPOCH):
+    for epoch in range(cfg.TRAIN.MAX_EPOCH_PRETRAINED):
         self_supervised_pretrain(train_loader_rotated, net, criterion_pretrained, optimizer, epoch)
+    for epoch in range(cfg.TRAIN.MAX_EPOCH):
         _t['train time'].tic()
         train(train_loader, net, criterion, optimizer, epoch)
         _t['train time'].toc(average=False)
