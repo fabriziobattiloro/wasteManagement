@@ -72,7 +72,6 @@ def main():
         print('val time of one epoch: {:.2f}s'.format(_t['val time'].diff))
 
 def self_supervised_pretrain(train_loader, net, criterion, optimizer, epoch):
-    net.train()
     total_loss = 0.0
 
     for i, data in enumerate(train_loader, 0):
