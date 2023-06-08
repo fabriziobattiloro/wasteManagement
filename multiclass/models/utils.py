@@ -249,27 +249,35 @@ import torchvision.transforms.functional as F
 # Define the rotation angles for augmentation
 rotation_angles = [0, 90, 180, 270]
 
-def generate_rotated_dataset(train_loader):
-    transformed_images = []
-    labels = []
+import torch
+from torchvision import transforms
+import random
 
-    # Iterate through the original train loader
-    for images, _ in train_loader:
-        # Iterate through each image in the batch
-        for image in images:
-            # Append the original image and its label to the dataset
-            transformed_images.append(image)
-            labels.append(0)  # Assign a label of 0 to the original image
+def generate_rotated_train_loader(train_loader):
+    # Define rotation angles
+    rotation_angles = [30, 90, 180, 360]
 
-            # Apply rotations to the image and append the rotated images with their labels
-            for angle in rotation_angles:
-                rotated_image = F.rotate(image, angle)
-                transformed_images.append(rotated_image)
-                labels.append(angle)  # Assign the rotation angle as the label
+    # Function to randomly rotate images
+    def rotate(image):
+        angle = random.choice(rotation_angles)
+        return transforms.functional.rotate(image, angle)
 
-    # Create a new dataset with the transformed images and labels
-    rotated_dataset = torch.utils.data.TensorDataset(torch.stack(transformed_images), torch.tensor(labels))
+    # Apply rotation to train_loader
+    transformed_train_loader = []
+    for images, labels in train_loader:
+        rotated_images = torch.stack([rotate(image) for image in images])
+        transformed_train_loader.append((rotated_images, labels))
 
-    return rotated_dataset
+    # Create rotated train loader
+    rotated_train_loader = torch.utils.data.DataLoader(
+        transformed_train_loader,
+        batch_size=train_loader.batch_size,
+        shuffle=train_loader.shuffle,
+        num_workers=train_loader.num_workers,
+        collate_fn=train_loader.collate_fn
+    )
+
+    return rotated_train_loader
+
 
 

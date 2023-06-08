@@ -26,7 +26,7 @@ writer = SummaryWriter(cfg.TRAIN.EXP_PATH+ '/' + exp_name)
 
 pil_to_tensor = standard_transforms.ToTensor()
 train_loader, val_loader, restore_transform = loading_data()
-#train_loader_rotated = generate_rotated_dataset(train_loader)
+train_loader_rotated = generate_rotated_dataset(train_loader)
 
 def main():
 
@@ -60,7 +60,7 @@ def main():
     _t = {'train time' : Timer(),'val time' : Timer()} 
     validate(val_loader, net, criterion, optimizer, -1, restore_transform)
     for epoch in range(cfg.TRAIN.MAX_EPOCH_PRETRAINED):
-        self_supervised_pretrain(train_loader, net, criterion_pretrained, optimizer, epoch)
+        self_supervised_pretrain(train_loader_rotated, net, criterion_pretrained, optimizer, epoch)
     for epoch in range(cfg.TRAIN.MAX_EPOCH):
         _t['train time'].tic()
         train(train_loader, net, criterion, optimizer, epoch)
