@@ -243,7 +243,8 @@ def calculate_class_pixel_counts(dataset):
 
 
 
-import torchvision.transforms as transforms
+import torch
+import torchvision.transforms.functional as F
 
 # Define the rotation angles for augmentation
 rotation_angles = [0, 90, 180, 270]
@@ -262,12 +263,12 @@ def generate_rotated_dataset(train_loader):
 
             # Apply rotations to the image and append the rotated images with their labels
             for angle in rotation_angles:
-                rotated_image = image.rotate(angle)
+                rotated_image = F.rotate(image, angle)
                 transformed_images.append(rotated_image)
                 labels.append(angle)  # Assign the rotation angle as the label
 
     # Create a new dataset with the transformed images and labels
-    rotated_dataset = torch.utils.data.TensorDataset(transformed_images, torch.tensor(labels))
+    rotated_dataset = torch.utils.data.TensorDataset(torch.stack(transformed_images), torch.tensor(labels))
 
     return rotated_dataset
 
