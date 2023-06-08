@@ -104,7 +104,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
         inputs, labels = data
         inputs = Variable(inputs, volatile=True).cuda()
         labels = Variable(labels, volatile=True).cuda()
-        outputs = net(inputs.cpu())
+        outputs = net(inputs)
         
         out = F.softmax(outputs, dim=1)  # Apply softmax activation function along the channel dimension
         max_value, predicted = torch.max(out.data, 1)
