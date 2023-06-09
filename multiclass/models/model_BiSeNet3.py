@@ -131,7 +131,7 @@ class ContextPath(nn.Module):
         #self.layer4 = pretrained.layer4
 
         inter_channels = 128
-        self.global_context = _GlobalAvgPooling(512, inter_channels, norm_layer)
+        self.global_context = _GlobalAvgPooling(256, inter_channels, norm_layer)
 
         self.arms = nn.ModuleList(
             [AttentionRefinmentModule(512, inter_channels, norm_layer, **kwargs),
