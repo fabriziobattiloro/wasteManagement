@@ -17,7 +17,7 @@ from models.config import cfg, __C
 from models.loading_data import loading_data
 from models.utils import *
 from models.timer import Timer
-from models.loss import MixSoftmaxCrossEntropyLoss
+from models.loss import CB_Loss
 import pdb
 
 exp_name = cfg.TRAIN.EXP_NAME
@@ -47,21 +47,22 @@ def main():
         net=net.cuda()
 
     net.train()
-    criterion = torch.nn.CrossEntropyLoss()
+    class_counts = [0] * cfg.DATA.NUM_CLASSES
+    criterion = CB_Loss(1,class_count[0]/class_count[1], class_count[0]/class_count[2], class_count[0]/class_count[3], class_count[0]/class_count[4]])
     criterion.cuda()
 
    
     optimizer = optim.Adam(net.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
     scheduler = StepLR(optimizer, step_size=cfg.TRAIN.NUM_EPOCH_LR_DECAY, gamma=cfg.TRAIN.LR_DECAY)
     _t = {'train time' : Timer(),'val time' : Timer()} 
-    validate(val_loader, net, criterion, optimizer, -1, restore_transform)
+    validate(val_loader, net, criterion, optimizer, -1, restore_transform, class_counts)
     for epoch in range(cfg.TRAIN.MAX_EPOCH):
         _t['train time'].tic()
         train(train_loader, net, criterion, optimizer, epoch)
         _t['train time'].toc(average=False)
         print('training time of one epoch: {:.2f}s'.format(_t['train time'].diff))
         _t['val time'].tic()
-        validate(val_loader, net, criterion, optimizer, epoch, restore_transform)
+        validate(val_loader, net, criterion, optimizer, epoch, restore_transform, class_counts)
         _t['val time'].toc(average=False)
         print('val time of one epoch: {:.2f}s'.format(_t['val time'].diff))
 
@@ -87,7 +88,7 @@ def train(train_loader, net, criterion, optimizer, epoch):
 
 
 
-def validate(val_loader, net, criterion, optimizer, epoch, restore):
+def validate(val_loader, net, criterion, optimizer, epoch, restore, class_counts):
     net.eval()
     criterion.cpu()
     input_batches = []
@@ -101,7 +102,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
     mean_classe3 = 0
     mean_classe4 = 0
     mean_tot = 0
-    class_counts = [0] * cfg.DATA.NUM_CLASSES
+    class_counts = [0 for _ in class_count]
 
     
     for vi, data in enumerate(val_loader, 0):
