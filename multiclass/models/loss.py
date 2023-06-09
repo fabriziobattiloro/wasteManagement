@@ -161,22 +161,22 @@ class CB_Loss(torch.nn.Module):
         num_classes = logits.size(1)
         labels_one_hot = F.one_hot(labels, num_classes).float()
 
-       """ 
-       if self.class_balanced:
-            effective_num = 1.0 - np.power(self.beta, self.samples_per_class)
-            weights = (1.0 - self.beta) / np.array(effective_num)
-            weights = weights / np.sum(weights) * num_classes
-            weights = torch.tensor(weights, device=logits.device).float()
+        # if self.class_balanced:
+        #     effective_num = 1.0 - np.power(self.beta, self.samples_per_class)
+        #     weights = (1.0 - self.beta) / np.array(effective_num)
+        #     weights = weights / np.sum(weights) * num_classes
+        #     weights = torch.tensor(weights, device=logits.device).float()
+        #
+        #     if self.loss_type != "cross_entropy":
+        #         weights = weights.unsqueeze(0)
+        #         weights = weights.repeat(batch_size, 1) * labels_one_hot
+        #         weights = weights.sum(1)
+        #         weights = weights.unsqueeze(1)
+        #         weights = weights.repeat(1, num_classes)
+        # else:
+        #     weights = None
 
-            if self.loss_type != "cross_entropy":
-                weights = weights.unsqueeze(0)
-                weights = weights.repeat(batch_size, 1) * labels_one_hot
-                weights = weights.sum(1)
-                weights = weights.unsqueeze(1)
-                weights = weights.repeat(1, num_classes)
-        else:
-            weights = None
-        """
+      
         if self.loss_type == "focal_loss":
             cb_loss = focal_loss(logits, labels_one_hot, alpha=weights, gamma=self.fl_gamma)
         elif self.loss_type == "cross_entropy":
