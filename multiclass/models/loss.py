@@ -110,7 +110,7 @@ def CB_loss(nn.Module):
     Class Balanced Loss: ((1-beta)/(1-beta^n))*Loss(labels, logits)
     where Loss is one of the standard losses used for Neural Networks.
     """
-    def __init__(self, samples_per_cls, no_of_classes=cfg.DATA_NUM_CLASSES, loss_type="focal_loss"=, beta=0.9999, gamma=2.0):
+    def __init__(self, samples_per_cls, no_of_classes=cfg.DATA_NUM_CLASSES, loss_type="focal"=, beta=0.9999, gamma=2.0):
         super(CB_loss, self).__init__()
         self.samples_per_cls = samples_per_cls
         self.no_of_classes = no_of_classes
@@ -134,9 +134,4 @@ def CB_loss(nn.Module):
 
         if loss_type == "focal":
             cb_loss = focal_loss(labels_one_hot, logits, weights, gamma)
-        elif loss_type == "sigmoid":
-            cb_loss = F.binary_cross_entropy_with_logits(input = logits,target = labels_one_hot, weights = weights)
-        elif loss_type == "softmax":
-            pred = logits.softmax(dim = 1)
-            cb_loss = F.binary_cross_entropy(input = pred, target = labels_one_hot, weight = weights)
         return cb_loss
