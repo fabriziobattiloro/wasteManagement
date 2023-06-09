@@ -124,7 +124,7 @@ class ContextPath(nn.Module):
         #self.bn1 = pretrained.bn1
         #self.relu = pretrained.relu
         self.maxpool = pretrained.maxpool
-        self.layer1 = pretrained.layer1
+        #self.layer1 = pretrained.layer1
         self.layer2 = pretrained.layer2
         self.layer3 = pretrained.layer3
         self.layer4 = pretrained.layer4
