@@ -6,13 +6,13 @@ import torch.nn.functional as F
 from torch.utils.checkpoint import checkpoint
 # from torchvision.models import resnet50, resnet101, resnet152
 
-from .config import config
+from .config import cfg
 from .xception39 import xception39
 from .seg_oprs import ConvBnRelu, AttentionRefinement, FeatureFusion
 
 
 def get():
-    return BiSeNet(config.num_classes, None, None)
+    return BiSeNet(cfg.DATA.NUM_CLASSES, None, None)
 
 
 class BiSeNet(nn.Module):
