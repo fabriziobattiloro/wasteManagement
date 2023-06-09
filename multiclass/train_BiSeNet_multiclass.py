@@ -102,7 +102,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore, class_counts
     mean_classe3 = 0
     mean_classe4 = 0
     mean_tot = 0
-    class_counts = [0 for _ in class_count]
+    class_counts = [0 for _ in class_counts]
 
     
     for vi, data in enumerate(val_loader, 0):
