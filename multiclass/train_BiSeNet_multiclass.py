@@ -48,7 +48,7 @@ def main():
 
     net.train()
     class_counts = [1] * cfg.DATA.NUM_CLASSES
-    criterion = CB_loss(class_counts, cfg.DATA.NUM_CLASSES, "focal_loss", beta = 0.9999,gamma = 2.0)
+    criterion = CB_loss()
     criterion.cuda()
 
    
@@ -58,7 +58,7 @@ def main():
     validate(val_loader, net, criterion, optimizer, -1, restore_transform, class_counts)
     for epoch in range(cfg.TRAIN.MAX_EPOCH):
         _t['train time'].tic()
-        train(train_loader, net, criterion, optimizer, epoch)
+        train(train_loader, net, criterion, optimizer, epoch, class_counts)
         _t['train time'].toc(average=False)
         print('training time of one epoch: {:.2f}s'.format(_t['train time'].diff))
         _t['val time'].tic()
@@ -67,7 +67,7 @@ def main():
         print('val time of one epoch: {:.2f}s'.format(_t['val time'].diff))
 
 
-def train(train_loader, net, criterion, optimizer, epoch):
+def train(train_loader, net, criterion, optimizer, epoch, class_counts):
     for i, data in enumerate(train_loader, 0):
         inputs, labels = data
         inputs = Variable(inputs).cuda()
@@ -77,9 +77,9 @@ def train(train_loader, net, criterion, optimizer, epoch):
         out1, out2, out3= outputs
         # Resize the labels tensor to match the output tensor dimensions
 
-        loss1 = criterion(out1, labels)
-        loss2 = criterion(out2, labels)
-        loss3 = criterion(out3, labels)
+        loss1 = criterion(out1, labels, class_counts, cfg.DATA.NUM_CLASSES, "focal_loss", beta = 0.9999,gamma = 2.0)
+        loss2 = criterion(out2, labels, class_counts, cfg.DATA.NUM_CLASSES, "focal_loss", beta = 0.9999,gamma = 2.0)
+        loss3 = criterion(out3, labels, class_counts, cfg.DATA.NUM_CLASSES, "focal_loss", beta = 0.9999,gamma = 2.0)
 
         losses = loss1 + loss2 + loss3
         optimizer.zero_grad()
