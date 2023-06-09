@@ -48,7 +48,8 @@ def main():
 
     net.train()
     class_counts = [1] * cfg.DATA.NUM_CLASSES
-    criterion = CB_Loss(1, class_counts[0]/class_counts[1], class_counts[0]/class_counts[2], class_counts[0]/class_counts[3], class_counts[0]/class_counts[4])
+    #criterion = CB_Loss(1, class_counts[0]/class_counts[1], class_counts[0]/class_counts[2], class_counts[0]/class_counts[3], class_counts[0]/class_counts[4])
+    criterion = CB_Loss(class_counts)
     #criterion=CB_Loss(loss_type="binary_cross_entropy",1,1,1,1,1)
     criterion.cuda()
 
@@ -143,7 +144,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore, class_counts
     
     # Print the pixel counts for each class
     for c in range(cfg.DATA.NUM_CLASSES):
-        if class_counts[c]==0:
+        if class_counts[c]==0 AND c==0:
             class_counts[c]=1
         print(f"pixels {c}: {class_counts[c]} pixels")
   
