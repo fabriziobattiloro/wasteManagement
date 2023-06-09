@@ -114,9 +114,11 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
         # For each pixel, determine the class with highest probability
         max_value, predicted = torch.max(out1.data, 1)  
         
-        input_batches.append(inputs)
-        output_batches.append(predicted)
-        label_batches.append(labels)
+        # Calculate the pixel counts for each class
+        for c in range(cfg.DATA.NUM_CLASSES):
+            class_mask = predicted == c
+            class_counts[c] += torch.sum(class_mask).item()
+            print(f"Class {c}: {class_counts[c]} pixels")
 
         mean0, mean1, mean2, mean3, mean4, mean5 = calculate_mean_iu([predicted.unsqueeze_(1).data.cpu().numpy()], 
                                         [labels.unsqueeze_(1).data.cpu().numpy()], cfg.DATA.NUM_CLASSES)
@@ -133,6 +135,10 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
     print(f"Class 3: {mean_classe3 / len(val_loader):.4f}")
     print(f"Class 4: {mean_classe4 / len(val_loader):.4f}")
     print(f"Class tot: {mean_tot / len(val_loader):.4f}")
+    
+    # Print the pixel counts for each class
+    for c in range(cfg.DATA.NUM_CLASSES):
+        print(f"Class {c}: {class_counts[c]} pixels")
   
   
     # Calculate average IoU score over all classes
