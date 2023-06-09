@@ -17,7 +17,7 @@ from models.config import cfg, __C
 from models.loading_data import loading_data
 from models.utils import *
 from models.timer import Timer
-from models.loss import Loss
+from models.loss import CB_loss
 import pdb
 
 exp_name = cfg.TRAIN.EXP_NAME
@@ -48,9 +48,7 @@ def main():
 
     net.train()
     class_counts = [1] * cfg.DATA.NUM_CLASSES
-    #criterion = CB_Loss(1, class_counts[0]/class_counts[1], class_counts[0]/class_counts[2], class_counts[0]/class_counts[3], class_counts[0]/class_counts[4])
-    criterion = Loss(class_counts, cfg.DATA.NUM_CLASSES, "focal_loss", beta = 0.9999,gamma = 2.0)
-    #criterion=CB_Loss(loss_type="binary_cross_entropy",1,1,1,1,1)
+    criterion = CB_loss(class_counts, cfg.DATA.NUM_CLASSES, "focal_loss", beta = 0.9999,gamma = 2.0)
     criterion.cuda()
 
    
