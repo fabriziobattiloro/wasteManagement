@@ -48,7 +48,7 @@ def main():
 
     net.train()
     class_counts = [1] * cfg.DATA.NUM_CLASSES
-    criterion = CB_loss()
+    criterion = CB_loss(class_counts)
     criterion.cuda()
 
    
@@ -77,9 +77,9 @@ def train(train_loader, net, criterion, optimizer, epoch, class_counts):
         out1, out2, out3= outputs
         # Resize the labels tensor to match the output tensor dimensions
 
-        loss1 = criterion(out1, labels, class_counts, cfg.DATA.NUM_CLASSES, "focal_loss", beta = 0.9999,gamma = 2.0)
-        loss2 = criterion(out2, labels, class_counts, cfg.DATA.NUM_CLASSES, "focal_loss", beta = 0.9999,gamma = 2.0)
-        loss3 = criterion(out3, labels, class_counts, cfg.DATA.NUM_CLASSES, "focal_loss", beta = 0.9999,gamma = 2.0)
+        loss1 = criterion(out1, labels)
+        loss2 = criterion(out2, labels)
+        loss3 = criterion(out3, labels)
 
         losses = loss1 + loss2 + loss3
         optimizer.zero_grad()
