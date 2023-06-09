@@ -112,6 +112,6 @@ class Xception(nn.Module):
 def xception39(pretrained_model=None, **kwargs):
     model = Xception(Block, [4, 8, 4], [16, 32, 64], **kwargs)
 
-    if pretrained_model is not None:
-        model = load_model(model, pretrained_model)
+    #if pretrained_model is not None:
+        #model = load_model(model, pretrained_model)
     return model
