@@ -62,7 +62,7 @@ def main():
         _t['train time'].toc(average=False)
         print('training time of one epoch: {:.2f}s'.format(_t['train time'].diff))
         _t['val time'].tic()
-        validate(val_loader, net, criterion, optimizer, epoch, restore_transform)
+        validate(val_loader, net, criterion, optimizer, epoch, restore_transform, class_counts)
         _t['val time'].toc(average=False)
         print('val time of one epoch: {:.2f}s'.format(_t['val time'].diff))
 
@@ -88,7 +88,7 @@ def train(train_loader, net, criterion, optimizer, epoch):
 
 
 
-def validate(val_loader, net, criterion, optimizer, epoch, restore):
+def validate(val_loader, net, criterion, optimizer, epoch, restore, class_counts):
     net.eval()
     criterion.cpu()
     input_batches = []
