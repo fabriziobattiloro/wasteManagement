@@ -100,7 +100,7 @@ def focal_loss(labels, logits, alpha, gamma):
     return focal_loss
 
 
-Class CB_loss(nn.Module):
+class CB_loss(nn.Module):
     """Compute the Class Balanced Loss between `logits` and the ground truth `labels`.
     Class Balanced Loss: ((1-beta)/(1-beta^n))*Loss(labels, logits)
     where Loss is one of the standard losses used for Neural Networks.
