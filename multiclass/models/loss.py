@@ -1,6 +1,7 @@
 """Custom losses."""
 import torch
 import torch.nn as nn
+import numpy as np
 import torch.nn.functional as F
 from models.config import cfg, __C
 
@@ -66,11 +67,6 @@ class MixSoftmaxCrossEntropyLoss(nn.CrossEntropyLoss):
                Serge J. Belongie
    https://arxiv.org/abs/1901.05555, CVPR'19.
 """
-
-
-import numpy as np
-import torch
-import torch.nn.functional as F
 
 
 def focal_loss(labels, logits, alpha, gamma):
