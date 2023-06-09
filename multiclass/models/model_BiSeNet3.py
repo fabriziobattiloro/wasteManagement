@@ -3,14 +3,14 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from models.xception39 import Xception
+from models.xception39 import xception39
 from models.basic import _ConvBNReLU
 
 __all__ = ['BiSeNet', 'get_bisenet', 'Xception', 'xception39']
 
 
 class BiSeNet(nn.Module):
-    def __init__(self, nclass, backbone='xception', aux=True, jpu=True, pretrained_base=False, **kwargs):
+    def __init__(self, nclass, backbone='xception39', aux=True, jpu=True, pretrained_base=False, **kwargs):
         super(BiSeNet, self).__init__()
         self.aux = aux
         self.spatial_path = SpatialPath(3, 128, **kwargs)
@@ -114,9 +114,9 @@ class AttentionRefinmentModule(nn.Module):
 
 
 class ContextPath(nn.Module):
-    def __init__(self, backbone='xception', pretrained_base=True, norm_layer=nn.BatchNorm2d, **kwargs):
+    def __init__(self, backbone='xception39', pretrained_base=True, norm_layer=nn.BatchNorm2d, **kwargs):
         super(ContextPath, self).__init__()
-        if backbone == 'xception':
+        if backbone == 'xception39':
             pretrained = xception39(pretrained=pretrained_base, **kwargs)
         else:
             raise RuntimeError('unknown backbone: {}'.format(backbone))
@@ -191,7 +191,7 @@ class FeatureFusion(nn.Module):
         return out
 
 
-def get_bisenet(dataset='citys', backbone='xception', pretrained=False, root='~/.torch/models',
+def get_bisenet(dataset='citys', backbone='xception39', pretrained=False, root='~/.torch/models',
                 pretrained_base=True, **kwargs):
     acronyms = {
         'pascal_voc': 'pascal_voc',
@@ -216,5 +216,5 @@ def get_bisenet_resnet18_citys(**kwargs):
 
 if __name__ == '__main__':
     img = torch.randn(2, 3, 224, 224)
-    model = BiSeNet(5, backbone='xception')
+    model = BiSeNet(5, backbone='xception39')
     print(model.exclusive)
