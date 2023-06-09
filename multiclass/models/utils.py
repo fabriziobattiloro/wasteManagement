@@ -9,7 +9,7 @@ import torch.cuda.amp as amp
 import torch
 from thop import profile, clever_format
 import torch.distributed as dist
-import .time
+import time
 
 def weights_init_kaiming(m):
     if isinstance(m, nn.Conv2d):
