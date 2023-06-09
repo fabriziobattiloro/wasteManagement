@@ -68,6 +68,11 @@ class MixSoftmaxCrossEntropyLoss(nn.CrossEntropyLoss):
 """
 
 
+import numpy as np
+import torch
+import torch.nn.functional as F
+
+
 def focal_loss(logits, labels, alpha=None, gamma=2):
     """Compute the focal loss between `logits` and the ground truth `labels`.
     Focal loss = -alpha_t * (1-pt)^gamma * log(pt)
@@ -100,16 +105,15 @@ def focal_loss(logits, labels, alpha=None, gamma=2):
     focal_loss /= torch.sum(labels)
     return focal_loss
 
-import numpy as np
 
-class CB_Loss(torch.nn.Module):
+class Loss(torch.nn.Module):
     def __init__(
         self,
-        samples_per_class,
         loss_type: str = "cross_entropy",
         beta: float = 0.999,
         fl_gamma=2,
-        class_balanced=True,
+        samples_per_class=None,
+        class_balanced=False,
     ):
         """
         Compute the Class Balanced Loss between `logits` and the ground truth `labels`.
@@ -129,7 +133,7 @@ class CB_Loss(torch.nn.Module):
         Returns:
             Loss instance
         """
-        super(CB_Loss, self).__init__()
+        super(Loss, self).__init__()
 
         if class_balanced is True and samples_per_class is None:
             raise ValueError("samples_per_class cannot be None when class_balanced is True")
@@ -161,17 +165,29 @@ class CB_Loss(torch.nn.Module):
         num_classes = logits.size(1)
         labels_one_hot = F.one_hot(labels, num_classes).float()
 
-      
+        if self.class_balanced:
+            effective_num = 1.0 - np.power(self.beta, self.samples_per_class)
+            weights = (1.0 - self.beta) / np.array(effective_num)
+            weights = weights / np.sum(weights) * num_classes
+            weights = torch.tensor(weights, device=logits.device).float()
+
+            if self.loss_type != "cross_entropy":
+                weights = weights.unsqueeze(0)
+                weights = weights.repeat(batch_size, 1) * labels_one_hot
+                weights = weights.sum(1)
+                weights = weights.unsqueeze(1)
+                weights = weights.repeat(1, num_classes)
+        else:
+            weights = None
+
         if self.loss_type == "focal_loss":
+            print("SIUUUUM")
             cb_loss = focal_loss(logits, labels_one_hot, alpha=weights, gamma=self.fl_gamma)
         elif self.loss_type == "cross_entropy":
-            print("SIUMMMMMM")
-            cb_loss = F.cross_entropy(input=logits, target=labels_one_hot, weight=samples_per_class)
+            cb_loss = F.cross_entropy(input=logits, target=labels_one_hot, weight=weights)
         elif self.loss_type == "binary_cross_entropy":
             cb_loss = F.binary_cross_entropy_with_logits(input=logits, target=labels_one_hot, weight=weights)
         elif self.loss_type == "softmax_binary_cross_entropy":
             pred = logits.softmax(dim=1)
             cb_loss = F.binary_cross_entropy(input=pred, target=labels_one_hot, weight=weights)
-        else:
-            cb_loss = None  # Assign a default value if none of the conditions are met
         return cb_loss
