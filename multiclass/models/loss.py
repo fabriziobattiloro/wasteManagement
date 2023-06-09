@@ -161,7 +161,8 @@ class CB_Loss(torch.nn.Module):
         num_classes = logits.size(1)
         labels_one_hot = F.one_hot(labels, num_classes).float()
 
-       """ if self.class_balanced:
+       """ 
+       if self.class_balanced:
             effective_num = 1.0 - np.power(self.beta, self.samples_per_class)
             weights = (1.0 - self.beta) / np.array(effective_num)
             weights = weights / np.sum(weights) * num_classes
