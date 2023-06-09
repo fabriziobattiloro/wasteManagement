@@ -251,14 +251,14 @@ if __name__ == '__main__':
 ##load model xception39
 
 def load_model(model, model_file, is_restore=False):
-    t_start = timer.timer()
+    t_start = timer()
     if isinstance(model_file, str):
         state_dict = torch.load(model_file, map_location=torch.device('cpu'))
         if 'model' in state_dict.keys():
             state_dict = state_dict['model']
     else:
         state_dict = model_file
-    t_ioend = timer.timer()
+    t_ioend = timer()
 
     if is_restore:
         new_state_dict = OrderedDict()
@@ -282,7 +282,7 @@ def load_model(model, model_file, is_restore=False):
             ', '.join('{}'.format(k) for k in unexpected_keys)))
 
     del state_dict
-    t_end = timer.timer()
+    t_end = timer()
     logger.info(
         "Load model, Time usage:\n\tIO: {}, initialize parameters: {}".format(
             t_ioend - t_start, t_end - t_ioend))
