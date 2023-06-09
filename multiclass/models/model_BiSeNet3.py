@@ -124,10 +124,10 @@ class ContextPath(nn.Module):
         #self.bn1 = pretrained.bn1
         #self.relu = pretrained.relu
         self.maxpool = pretrained.maxpool
-        #self.layer1 = pretrained.layer1
+        self.layer1 = pretrained.layer1
         self.layer2 = pretrained.layer2
         self.layer3 = pretrained.layer3
-        self.layer1 = pretrained.layer1
+        #self.layer1 = pretrained.layer1
         #self.layer4 = pretrained.layer4
 
         inter_channels = 128
@@ -155,8 +155,8 @@ class ContextPath(nn.Module):
         context_blocks.append(x)
         c3 = self.layer3(x)
         context_blocks.append(c3)
-        c4 = self.layer4(c3)
-        context_blocks.append(c4)
+        #c4 = self.layer1(c3)
+        #context_blocks.append(c4)
         context_blocks.reverse()
 
         global_context = self.global_context(c4)
