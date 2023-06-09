@@ -122,7 +122,7 @@ class ContextPath(nn.Module):
             raise RuntimeError('unknown backbone: {}'.format(backbone))
         self.conv1 = pretrained.conv1
         #self.bn1 = pretrained.bn1
-        self.relu = pretrained.relu
+        #self.relu = pretrained.relu
         self.maxpool = pretrained.maxpool
         self.layer1 = pretrained.layer1
         self.layer2 = pretrained.layer2
