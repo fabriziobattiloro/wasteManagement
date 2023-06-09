@@ -144,7 +144,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore, class_counts
     
     # Print the pixel counts for each class
     for c in range(cfg.DATA.NUM_CLASSES):
-        if class_counts[c]==0 AND c==0:
+        if class_counts[c]==0 and c==0:
             class_counts[c]=1
         print(f"pixels {c}: {class_counts[c]} pixels")
   
