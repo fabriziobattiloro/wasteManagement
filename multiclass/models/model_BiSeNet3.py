@@ -127,7 +127,8 @@ class ContextPath(nn.Module):
         #self.layer1 = pretrained.layer1
         self.layer2 = pretrained.layer2
         self.layer3 = pretrained.layer3
-        self.layer4 = pretrained.layer4
+        self.layer1 = pretrained.layer1
+        #self.layer4 = pretrained.layer4
 
         inter_channels = 128
         self.global_context = _GlobalAvgPooling(512, inter_channels, norm_layer)
