@@ -47,6 +47,7 @@ def main():
         net=net.cuda()
 
     net.train()
+    class_counts = [0] * cfg.DATA.NUM_CLASSES
     criterion = torch.nn.CrossEntropyLoss()
     criterion.cuda()
 
@@ -101,7 +102,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
     mean_classe3 = 0
     mean_classe4 = 0
     mean_tot = 0
-    class_counts = [0] * cfg.DATA.NUM_CLASSES
+  
 
     
     for vi, data in enumerate(val_loader, 0):
