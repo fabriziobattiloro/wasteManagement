@@ -114,7 +114,7 @@ class AttentionRefinmentModule(nn.Module):
 
 
 class ContextPath(nn.Module):
-    def __init__(self, backbone='xception39', pretrained_base=True, norm_layer=nn.BatchNorm2d, **kwargs):
+    def __init__(self, backbone='xception39', pretrained_base=False, norm_layer=nn.BatchNorm2d, **kwargs):
         super(ContextPath, self).__init__()
         if backbone == 'xception39':
             pretrained = xception39(pretrained=pretrained_base, **kwargs)
