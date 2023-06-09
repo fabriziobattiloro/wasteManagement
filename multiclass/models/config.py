@@ -29,7 +29,7 @@ __C.DATA.MEAN_STD = ([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 #------------------------------TRAIN------------------------
 
 # stage
-__C.TRAIN.STAGE = 'encoder' # encoder or all
+__C.TRAIN.STAGE = 'all' # encoder or all
 __C.TRAIN.PRETRAINED_ENCODER = '' # Path of the pretrained encoder
 
 # input setting
