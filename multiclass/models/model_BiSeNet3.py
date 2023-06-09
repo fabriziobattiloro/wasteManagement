@@ -117,7 +117,7 @@ class ContextPath(nn.Module):
     def __init__(self, backbone='xception', pretrained_base=True, norm_layer=nn.BatchNorm2d, **kwargs):
         super(ContextPath, self).__init__()
         if backbone == 'xception':
-            pretrained = resnet18(pretrained=pretrained_base, **kwargs)
+            pretrained = xception(pretrained=pretrained_base, **kwargs)
         else:
             raise RuntimeError('unknown backbone: {}'.format(backbone))
         self.conv1 = pretrained.conv1
