@@ -6,9 +6,9 @@ import torch.nn.functional as F
 from torch.utils.checkpoint import checkpoint
 # from torchvision.models import resnet50, resnet101, resnet152
 
-from models.config import config
-from models.xception39 import xception39
-from models.seg_oprs import ConvBnRelu, AttentionRefinement, FeatureFusion
+from .config import config
+from .xception39 import xception39
+from .seg_oprs import ConvBnRelu, AttentionRefinement, FeatureFusion
 
 
 def get():
