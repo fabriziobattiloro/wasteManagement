@@ -109,7 +109,7 @@ class Xception(nn.Module):
         return blocks
 
 
-def xception39(pretrained_model=None, **kwargs):
+def xception39(pretrained_model, **kwargs):
     model = Xception(Block, [4, 8, 4], [16, 32, 64], **kwargs)
 
     if pretrained_model is not None:
