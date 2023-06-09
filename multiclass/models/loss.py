@@ -161,7 +161,7 @@ class CB_Loss(torch.nn.Module):
         num_classes = logits.size(1)
         labels_one_hot = F.one_hot(labels, num_classes).float()
 
-        if self.class_balanced:
+       """ if self.class_balanced:
             effective_num = 1.0 - np.power(self.beta, self.samples_per_class)
             weights = (1.0 - self.beta) / np.array(effective_num)
             weights = weights / np.sum(weights) * num_classes
@@ -175,11 +175,11 @@ class CB_Loss(torch.nn.Module):
                 weights = weights.repeat(1, num_classes)
         else:
             weights = None
-
+        """
         if self.loss_type == "focal_loss":
             cb_loss = focal_loss(logits, labels_one_hot, alpha=weights, gamma=self.fl_gamma)
         elif self.loss_type == "cross_entropy":
-            cb_loss = F.cross_entropy(input=logits, target=labels_one_hot, weight=weights)
+            cb_loss = F.cross_entropy(input=logits, target=labels_one_hot, samples_per_class)
         elif self.loss_type == "binary_cross_entropy":
             cb_loss = F.binary_cross_entropy_with_logits(input=logits, target=labels_one_hot, weight=weights)
         elif self.loss_type == "softmax_binary_cross_entropy":
