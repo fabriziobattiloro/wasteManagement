@@ -190,4 +190,7 @@ class Loss(torch.nn.Module):
         elif self.loss_type == "softmax_binary_cross_entropy":
             pred = logits.softmax(dim=1)
             cb_loss = F.binary_cross_entropy(input=pred, target=labels_one_hot, weight=weights)
+        else
+            print("siuuuum")
+            cb_loss=None
         return cb_loss
