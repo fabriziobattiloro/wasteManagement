@@ -17,7 +17,7 @@ from models.config import cfg, __C
 from models.loading_data import loading_data
 from models.utils import *
 from models.timer import Timer
-from models.loss import CB_Loss
+from models.loss import Loss
 import pdb
 
 exp_name = cfg.TRAIN.EXP_NAME
