@@ -165,10 +165,13 @@ class CB_Loss(torch.nn.Module):
         if self.loss_type == "focal_loss":
             cb_loss = focal_loss(logits, labels_one_hot, alpha=weights, gamma=self.fl_gamma)
         elif self.loss_type == "cross_entropy":
+            print("SIUMMMMMM")
            cb_loss = F.cross_entropy(input=logits, target=labels_one_hot, weight=samples_per_class)
         elif self.loss_type == "binary_cross_entropy":
             cb_loss = F.binary_cross_entropy_with_logits(input=logits, target=labels_one_hot, weight=weights)
         elif self.loss_type == "softmax_binary_cross_entropy":
             pred = logits.softmax(dim=1)
             cb_loss = F.binary_cross_entropy(input=pred, target=labels_one_hot, weight=weights)
+        else:
+            cb_loss = None  # Assign a default value if none of the conditions are met
         return cb_loss
