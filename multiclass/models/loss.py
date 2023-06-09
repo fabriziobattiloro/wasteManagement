@@ -106,7 +106,7 @@ class CB_Loss(torch.nn.Module):
     def __init__(
         self,
         samples_per_class,
-        loss_type: str = "cross_entropy",
+        loss_type: str = "focal_loss",
         beta: float = 0.999,
         fl_gamma=2,
         class_balanced=True,
