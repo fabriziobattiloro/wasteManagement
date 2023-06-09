@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from models.xception39 import xception
+from models.xception39 import Xception
 from models.basic import _ConvBNReLU
 
 __all__ = ['BiSeNet', 'get_bisenet', 'get_bisenet_resnet18_citys']
