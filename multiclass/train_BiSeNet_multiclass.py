@@ -121,6 +121,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore, class_counts
             class_mask = predicted == c
             class_counts[c] += torch.sum(class_mask).item()
             print(f"pixels {c}: {class_counts[c]} pixels")
+        print("|||||||||||")
 
         mean0, mean1, mean2, mean3, mean4, mean5 = calculate_mean_iu([predicted.unsqueeze_(1).data.cpu().numpy()], 
                                         [labels.unsqueeze_(1).data.cpu().numpy()], cfg.DATA.NUM_CLASSES)
@@ -142,7 +143,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore, class_counts
     for c in range(cfg.DATA.NUM_CLASSES):
         print(f"pixels {c}: {class_counts[c]} pixels")
   
-  
+    print("|||||||||||")
     # Calculate average IoU score over all classes
     #mean_classes[5] =float (iou_ / cfg.DATA.NUM_CLASSES)
     #print(f"Mean IoU: {mean_iou:.4f}")
