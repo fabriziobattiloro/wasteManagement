@@ -1,178 +1,220 @@
-# encoding: utf-8
-
+"""Bilateral Segmentation Network"""
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.checkpoint import checkpoint
-# from torchvision.models import resnet50, resnet101, resnet152
 
-from .config import cfg
-from .xception39 import xception39
-from .seg_oprs import ConvBnRelu, AttentionRefinement, FeatureFusion
+from models.xception39 import xception
+from models.basic import _ConvBNReLU
 
-
-def get():
-    return BiSeNet(cfg.DATA.NUM_CLASSES, None, None)
+__all__ = ['BiSeNet', 'get_bisenet', 'get_bisenet_resnet18_citys']
 
 
 class BiSeNet(nn.Module):
-    def __init__(self, out_planes, is_training,
-                 criterion, ohem_criterion, pretrained_model=None,
-                 norm_layer=nn.BatchNorm2d):
+    def __init__(self, nclass, backbone='xception', aux=True, jpu=True, pretrained_base=False, **kwargs):
         super(BiSeNet, self).__init__()
-        self.context_path = xception39(pretrained_model, norm_layer=norm_layer)
+        self.aux = aux
+        self.spatial_path = SpatialPath(3, 128, **kwargs)
+        self.context_path = ContextPath(backbone, pretrained_base, **kwargs)
+        self.ffm = FeatureFusion(256, 256, 4, **kwargs)
+        self.head = _BiSeHead(256, 64, nclass, **kwargs)
+        if aux:
+            self.auxlayer1 = _BiSeHead(128, 256, nclass, **kwargs)
+            self.auxlayer2 = _BiSeHead(128, 256, nclass, **kwargs)
 
-        self.business_layer = []
-        self.is_training = is_training
+        self.__setattr__('exclusive',
+                         ['spatial_path', 'context_path', 'ffm', 'head', 'auxlayer1', 'auxlayer2'] if aux else [
+                             'spatial_path', 'context_path', 'ffm', 'head'])
 
-        self.spatial_path = SpatialPath(3, 128, norm_layer)
+    def forward(self, x):
+        size = x.size()[2:]
+        spatial_out = self.spatial_path(x)
+        context_out = self.context_path(x)
+        fusion_out = self.ffm(spatial_out, context_out[-1])
+        outputs = []
+        x = self.head(fusion_out)
+        x = F.interpolate(x, size, mode='bilinear', align_corners=True)
+        outputs.append(x)
 
-        conv_channel = 128
-        self.global_context = nn.Sequential(
-            nn.AdaptiveAvgPool2d(1),
-            ConvBnRelu(256, conv_channel, 1, 1, 0,
-                       has_bn=True,
-                       has_relu=True, has_bias=False, norm_layer=norm_layer)
+        if self.aux:
+            auxout1 = self.auxlayer1(context_out[0])
+            auxout1 = F.interpolate(auxout1, size, mode='bilinear', align_corners=True)
+            outputs.append(auxout1)
+            auxout2 = self.auxlayer2(context_out[1])
+            auxout2 = F.interpolate(auxout2, size, mode='bilinear', align_corners=True)
+            outputs.append(auxout2)
+        return tuple(outputs)
+
+
+class _BiSeHead(nn.Module):
+    def __init__(self, in_channels, inter_channels, nclass, norm_layer=nn.BatchNorm2d, **kwargs):
+        super(_BiSeHead, self).__init__()
+        self.block = nn.Sequential(
+            _ConvBNReLU(in_channels, inter_channels, 3, 1, 1, norm_layer=norm_layer),
+            nn.Dropout(0.1),
+            nn.Conv2d(inter_channels, nclass, 1)
         )
 
-        # stage = [256, 128, 64]
-        arms = [AttentionRefinement(256, conv_channel, norm_layer),
-                AttentionRefinement(128, conv_channel, norm_layer)]
-        refines = [ConvBnRelu(conv_channel, conv_channel, 3, 1, 1,
-                              has_bn=True, norm_layer=norm_layer,
-                              has_relu=True, has_bias=False),
-                   ConvBnRelu(conv_channel, conv_channel, 3, 1, 1,
-                              has_bn=True, norm_layer=norm_layer,
-                              has_relu=True, has_bias=False)]
-
-        if is_training:
-            heads = [BiSeNetHead(conv_channel, out_planes, 2,
-                                 True, norm_layer),
-                     BiSeNetHead(conv_channel, out_planes, 1,
-                                 True, norm_layer),
-                     BiSeNetHead(conv_channel * 2, out_planes, 1,
-                                 False, norm_layer)]
-        else:
-            heads = [None, None,
-                     BiSeNetHead(conv_channel * 2, out_planes, 1,
-                                 False, norm_layer)]
-
-        self.ffm = FeatureFusion(conv_channel * 2, conv_channel * 2,
-                                 1, norm_layer)
-
-        self.arms = nn.ModuleList(arms)
-        self.refines = nn.ModuleList(refines)
-        self.heads = nn.ModuleList(heads)
-
-        self.business_layer.append(self.spatial_path)
-        self.business_layer.append(self.global_context)
-        self.business_layer.append(self.arms)
-        self.business_layer.append(self.refines)
-        self.business_layer.append(self.heads)
-        self.business_layer.append(self.ffm)
-
-        if is_training:
-            self.criterion = criterion
-            self.ohem_criterion = ohem_criterion
-
-    def forward(self, data, label=None):
-        spatial_out = self.spatial_path(data)
-
-        context_blocks = self.context_path(data)
-        context_blocks.reverse()
-
-        global_context = self.global_context(context_blocks[0])
-        global_context = F.interpolate(global_context,
-                                       size=context_blocks[0].size()[2:],
-                                       mode='bilinear', align_corners=True)
-
-        last_fm = global_context
-        pred_out = []
-
-        for i, (fm, arm, refine) in enumerate(zip(context_blocks[:2], self.arms,
-                                                  self.refines)):
-            fm = arm(fm)
-            fm += last_fm
-            last_fm = F.interpolate(fm, size=(context_blocks[i + 1].size()[2:]),
-                                    mode='bilinear', align_corners=True)
-            last_fm = refine(last_fm)
-            pred_out.append(last_fm)
-        context_out = last_fm
-
-        concate_fm = self.ffm(spatial_out, context_out)
-        # concate_fm = self.heads[-1](concate_fm)
-        pred_out.append(concate_fm)
-
-        if self.is_training:
-            aux_loss0 = self.ohem_criterion(self.heads[0](pred_out[0]), label)
-            aux_loss1 = self.ohem_criterion(self.heads[1](pred_out[1]), label)
-            main_loss = self.ohem_criterion(self.heads[-1](pred_out[2]), label)
-
-            loss = main_loss + aux_loss0 + aux_loss1
-            return loss
-
-        return F.log_softmax(self.heads[-1](pred_out[-1]), dim=1)
+    def forward(self, x):
+        x = self.block(x)
+        return x
 
 
 class SpatialPath(nn.Module):
-    def __init__(self, in_planes, out_planes, norm_layer=nn.BatchNorm2d):
+    """Spatial path"""
+
+    def __init__(self, in_channels, out_channels, norm_layer=nn.BatchNorm2d, **kwargs):
         super(SpatialPath, self).__init__()
-        inner_channel = 64
-        self.conv_7x7 = ConvBnRelu(in_planes, inner_channel, 7, 2, 3,
-                                   has_bn=True, norm_layer=norm_layer,
-                                   has_relu=True, has_bias=False)
-        self.conv_3x3_1 = ConvBnRelu(inner_channel, inner_channel, 3, 2, 1,
-                                     has_bn=True, norm_layer=norm_layer,
-                                     has_relu=True, has_bias=False)
-        self.conv_3x3_2 = ConvBnRelu(inner_channel, inner_channel, 3, 2, 1,
-                                     has_bn=True, norm_layer=norm_layer,
-                                     has_relu=True, has_bias=False)
-        self.conv_1x1 = ConvBnRelu(inner_channel, out_planes, 1, 1, 0,
-                                   has_bn=True, norm_layer=norm_layer,
-                                   has_relu=True, has_bias=False)
+        inter_channels = 64
+        self.conv7x7 = _ConvBNReLU(in_channels, inter_channels, 7, 2, 3, norm_layer=norm_layer)
+        self.conv3x3_1 = _ConvBNReLU(inter_channels, inter_channels, 3, 2, 1, norm_layer=norm_layer)
+        self.conv3x3_2 = _ConvBNReLU(inter_channels, inter_channels, 3, 2, 1, norm_layer=norm_layer)
+        self.conv1x1 = _ConvBNReLU(inter_channels, out_channels, 1, 1, 0, norm_layer=norm_layer)
 
     def forward(self, x):
-        x = self.conv_7x7(x)
-        x = self.conv_3x3_1(x)
-        x = self.conv_3x3_2(x)
-        output = self.conv_1x1(x)
+        x = self.conv7x7(x)
+        x = self.conv3x3_1(x)
+        x = self.conv3x3_2(x)
+        x = self.conv1x1(x)
 
-        return output
+        return x
 
 
-class BiSeNetHead(nn.Module):
-    def __init__(self, in_planes, out_planes, scale,
-                 is_aux=False, norm_layer=nn.BatchNorm2d):
-        super(BiSeNetHead, self).__init__()
-        if is_aux:
-            self.conv_3x3 = ConvBnRelu(in_planes, 128, 3, 1, 1,
-                                       has_bn=True, norm_layer=norm_layer,
-                                       has_relu=True, has_bias=False)
-        else:
-            self.conv_3x3 = ConvBnRelu(in_planes, 64, 3, 1, 1,
-                                       has_bn=True, norm_layer=norm_layer,
-                                       has_relu=True, has_bias=False)
-        # self.dropout = nn.Dropout(0.1)
-        if is_aux:
-            self.conv_1x1 = nn.Conv2d(128, out_planes, kernel_size=1,
-                                      stride=1, padding=0)
-        else:
-            self.conv_1x1 = nn.Conv2d(64, out_planes, kernel_size=1,
-                                      stride=1, padding=0)
-        self.scale = scale
+class _GlobalAvgPooling(nn.Module):
+    def __init__(self, in_channels, out_channels, norm_layer, **kwargs):
+        super(_GlobalAvgPooling, self).__init__()
+        self.gap = nn.Sequential(
+            nn.AdaptiveAvgPool2d(1),
+            nn.Conv2d(in_channels, out_channels, 1, bias=False),
+            norm_layer(out_channels),
+            nn.ReLU(True)
+        )
 
     def forward(self, x):
-        fm = self.conv_3x3(x)
-        # fm = self.dropout(fm)
-        output = self.conv_1x1(fm)
-        if self.scale > 1:
-            output = F.interpolate(output, scale_factor=self.scale,
-                                   mode='bilinear',
-                                   align_corners=True)
-
-        return output
+        size = x.size()[2:]
+        pool = self.gap(x)
+        out = F.interpolate(pool, size, mode='bilinear', align_corners=True)
+        return out
 
 
-if __name__ == "__main__":
-    model = BiSeNet(19, None)
-    # print(model)
+class AttentionRefinmentModule(nn.Module):
+    def __init__(self, in_channels, out_channels, norm_layer=nn.BatchNorm2d, **kwargs):
+        super(AttentionRefinmentModule, self).__init__()
+        self.conv3x3 = _ConvBNReLU(in_channels, out_channels, 3, 1, 1, norm_layer=norm_layer)
+        self.channel_attention = nn.Sequential(
+            nn.AdaptiveAvgPool2d(1),
+            _ConvBNReLU(out_channels, out_channels, 1, 1, 0, norm_layer=norm_layer),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        x = self.conv3x3(x)
+        attention = self.channel_attention(x)
+        x = x * attention
+        return x
+
+
+class ContextPath(nn.Module):
+    def __init__(self, backbone='xception', pretrained_base=True, norm_layer=nn.BatchNorm2d, **kwargs):
+        super(ContextPath, self).__init__()
+        if backbone == 'xception':
+            pretrained = resnet18(pretrained=pretrained_base, **kwargs)
+        else:
+            raise RuntimeError('unknown backbone: {}'.format(backbone))
+        self.conv1 = pretrained.conv1
+        self.bn1 = pretrained.bn1
+        self.relu = pretrained.relu
+        self.maxpool = pretrained.maxpool
+        self.layer1 = pretrained.layer1
+        self.layer2 = pretrained.layer2
+        self.layer3 = pretrained.layer3
+        self.layer4 = pretrained.layer4
+
+        inter_channels = 128
+        self.global_context = _GlobalAvgPooling(512, inter_channels, norm_layer)
+
+        self.arms = nn.ModuleList(
+            [AttentionRefinmentModule(512, inter_channels, norm_layer, **kwargs),
+             AttentionRefinmentModule(256, inter_channels, norm_layer, **kwargs)]
+        )
+        self.refines = nn.ModuleList(
+            [_ConvBNReLU(inter_channels, inter_channels, 3, 1, 1, norm_layer=norm_layer),
+             _ConvBNReLU(inter_channels, inter_channels, 3, 1, 1, norm_layer=norm_layer)]
+        )
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.bn1(x)
+        x = self.relu(x)
+        x = self.maxpool(x)
+        x = self.layer1(x)
+
+        context_blocks = []
+        context_blocks.append(x)
+        x = self.layer2(x)
+        context_blocks.append(x)
+        c3 = self.layer3(x)
+        context_blocks.append(c3)
+        c4 = self.layer4(c3)
+        context_blocks.append(c4)
+        context_blocks.reverse()
+
+        global_context = self.global_context(c4)
+        last_feature = global_context
+        context_outputs = []
+        for i, (feature, arm, refine) in enumerate(zip(context_blocks[:2], self.arms, self.refines)):
+            feature = arm(feature)
+            feature += last_feature
+            last_feature = F.interpolate(feature, size=context_blocks[i + 1].size()[2:],
+                                         mode='bilinear', align_corners=True)
+            last_feature = refine(last_feature)
+            context_outputs.append(last_feature)
+
+        return context_outputs
+
+
+class FeatureFusion(nn.Module):
+    def __init__(self, in_channels, out_channels, reduction=1, norm_layer=nn.BatchNorm2d, **kwargs):
+        super(FeatureFusion, self).__init__()
+        self.conv1x1 = _ConvBNReLU(in_channels, out_channels, 1, 1, 0, norm_layer=norm_layer, **kwargs)
+        self.channel_attention = nn.Sequential(
+            nn.AdaptiveAvgPool2d(1),
+            _ConvBNReLU(out_channels, out_channels // reduction, 1, 1, 0, norm_layer=norm_layer),
+            _ConvBNReLU(out_channels // reduction, out_channels, 1, 1, 0, norm_layer=norm_layer),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x1, x2):
+        fusion = torch.cat([x1, x2], dim=1)
+        out = self.conv1x1(fusion)
+        attention = self.channel_attention(out)
+        out = out + out * attention
+        return out
+
+
+def get_bisenet(dataset='citys', backbone='xception', pretrained=False, root='~/.torch/models',
+                pretrained_base=True, **kwargs):
+    acronyms = {
+        'pascal_voc': 'pascal_voc',
+        'pascal_aug': 'pascal_aug',
+        'ade20k': 'ade',
+        'coco': 'coco',
+        'citys': 'citys',
+    }
+    from ..data.dataloader import datasets
+    model = BiSeNet(datasets[dataset].NUM_CLASS, backbone=backbone, pretrained_base=pretrained_base, **kwargs)
+    if pretrained:
+        from .model_store import get_model_file
+        device = torch.device(kwargs['local_rank'])
+        model.load_state_dict(torch.load(get_model_file('bisenet_%s_%s' % (backbone, acronyms[dataset]), root=root),
+                              map_location=device))
+    return model
+
+
+def get_bisenet_resnet18_citys(**kwargs):
+    return get_bisenet('citys', 'resnet18', **kwargs)
+
+
+if __name__ == '__main__':
+    img = torch.randn(2, 3, 224, 224)
+    model = BiSeNet(5, backbone='xception')
+    print(model.exclusive)
