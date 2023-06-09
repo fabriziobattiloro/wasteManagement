@@ -159,7 +159,7 @@ class ContextPath(nn.Module):
         #context_blocks.append(c4)
         context_blocks.reverse()
 
-        global_context = self.global_context(c4)
+        global_context = self.global_context(c3)
         last_feature = global_context
         context_outputs = []
         for i, (feature, arm, refine) in enumerate(zip(context_blocks[:2], self.arms, self.refines)):
