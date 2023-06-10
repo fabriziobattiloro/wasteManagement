@@ -126,6 +126,8 @@ class CB_loss(nn.Module):
         print("siuuummm")
         print("Dimensions of weights:", weights.shape)
         print("Dimensions of labels_one_hot:", labels_one_hot.shape)
+        weights.cuda()
+        labels_one_hot.cuda()
         weights = weights * labels_one_hot
         weights = weights.sum(1)
         weights = weights.unsqueeze(1)
