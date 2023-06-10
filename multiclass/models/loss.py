@@ -183,6 +183,7 @@ class CB_loss(torch.nn.Module):
                 print("weights dimensions:", weights.size())
                 weights = weights.unsqueeze(2)
                 weights = weights.unsqueeze(3)
+                print("weights dimensions:", weights.size())
                 weights = weights.expand( labels_one_hot.size(1), labels_one_hot.size(2))
                 print("weights dimensions:", weights.size())
                 weights = weights * labels_one_hot
