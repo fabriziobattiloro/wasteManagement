@@ -101,6 +101,7 @@ def focal_loss(logits, labels, alpha=1, gamma=2):
 
     if alpha is not None:
         print(alpha.size())
+        print(loss.size())
         weighted_loss = alpha * loss
         focal_loss = torch.sum(weighted_loss)
     else:
