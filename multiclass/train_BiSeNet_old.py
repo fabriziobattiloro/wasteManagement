@@ -30,7 +30,7 @@ train_loader, val_loader, restore_transform = loading_data()
 
 def main():
 
-    cfg_file = open('/content/drive/MyDrive/project-WasteSemSeg-main/program/config.py',"r")  
+    cfg_file = open('/kaggle/working/project-code1/multiclass/models/config.py',"r")  
     cfg_lines = cfg_file.readlines()
     
     with open(log_txt, 'a') as f:
