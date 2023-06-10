@@ -74,7 +74,7 @@ import torch
 import torch.nn.functional as F
 
 
-def focal_loss(logits, labels, alpha=None, gamma=2):
+def focal_loss(logits, labels, alpha=1, gamma=2):
     """Compute the focal loss between `logits` and the ground truth `labels`.
     Focal loss = -alpha_t * (1-pt)^gamma * log(pt)
     where pt is the probability of being classified to the true class.
@@ -191,7 +191,8 @@ class CB_loss(torch.nn.Module):
                 print("weights dimensions:", weights.size())
 
 
-                weights = weights.unsqueeze(1)
+                weights = weights.squeeze(1)
+                print("weights dimensions:", weights.size())
                 weights = weights.repeat(1, num_classes)
         else:
             weights = None
