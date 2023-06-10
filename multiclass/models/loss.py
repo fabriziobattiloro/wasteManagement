@@ -121,8 +121,7 @@ class CB_loss(nn.Module):
         labels_one_hot = F.one_hot(labels.long(), self.no_of_classes).float()
 
         weights = torch.tensor(weights).float()
-        weights = weights.unsqueeze(2)  # Add a new dimension
-        weights = weights.repeat(1, 1, labels_one_hot.shape[2])  # Repeat along the third dimension
+        weights = weights.repeat(1, labels_one_hot.shape[1])  # Repeat along the second dimension
         weights = weights * labels_one_hot  # Element-wise multiplication
         weights = weights.sum(1)
         weights = weights.unsqueeze(1)
