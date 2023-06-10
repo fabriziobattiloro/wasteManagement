@@ -119,9 +119,13 @@ class CB_loss(nn.Module):
         weights = weights / np.sum(weights) * self.no_of_classes
 
         labels_one_hot = F.one_hot(labels.long(), self.no_of_classes).float()
-
+        print("Dimensions of weights:", weights.shape)
+        print("Dimensions of labels_one_hot:", labels_one_hot.shape)
         weights = torch.tensor(weights).float()
         weights = weights.unsqueeze(0)
+        print("siuuummm")
+        print("Dimensions of weights:", weights.shape)
+        print("Dimensions of labels_one_hot:", labels_one_hot.shape)
         weights = weights.repeat(labels_one_hot.shape[0],1) * labels_one_hot
         weights = weights.sum(1)
         weights = weights.unsqueeze(1)
