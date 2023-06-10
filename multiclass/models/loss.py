@@ -134,7 +134,7 @@ class CB_loss(torch.nn.Module):
         Returns:
             Loss instance
         """
-        super(Loss, self).__init__()
+        super(CB_loss, self).__init__()
 
         if class_balanced is True and samples_per_class is None:
             raise ValueError("samples_per_class cannot be None when class_balanced is True")
