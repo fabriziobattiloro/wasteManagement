@@ -175,6 +175,8 @@ class CB_loss(torch.nn.Module):
 
             if self.loss_type != "cross_entropy":
                 weights = weights.unsqueeze(0)
+                print("weights dimensions:", weights.size())
+                print("labels_one_hot dimensions:", labels_one_hot.size())
                 weights = weights.repeat(batch_size, 1) * labels_one_hot
                 weights = weights.sum(1)
                 weights = weights.unsqueeze(1)
