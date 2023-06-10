@@ -88,7 +88,8 @@ def focal_loss(logits, labels, alpha=1, gamma=2):
     Returns:
       focal_loss: A float32 scalar representing normalized total loss.
     """
-    bc_loss = F.binary_cross_entropy_with_logits(input=logits, target=labels.permute(0, 3, 1, 2), reduction="none")
+    labels=labels.permute(0, 3, 1, 2)
+    bc_loss = F.binary_cross_entropy_with_logits(input=logits, target=labels, reduction="none")
 
 
     if gamma == 0.0:
