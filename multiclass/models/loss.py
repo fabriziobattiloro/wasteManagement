@@ -194,6 +194,7 @@ class CB_loss(torch.nn.Module):
                 weights = weights.squeeze(1)
                 print("weights dimensions:", weights.size())
                 weights = weights.squeeze(2)
+                print("weights dimensions:", weights.size())
                 weights = weights.repeat(1, num_classes)
         else:
             weights = None
