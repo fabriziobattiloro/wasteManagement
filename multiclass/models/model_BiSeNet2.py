@@ -9,7 +9,7 @@ import torchvision
 
 from models.resnet import Resnet18
 
-from models.basic import BatchNorm2d
+from torch.nn import BatchNorm2d
 
 
 class ConvBNReLU(nn.Module):
