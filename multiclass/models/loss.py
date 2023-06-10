@@ -113,8 +113,8 @@ class CB_loss(torch.nn.Module):
         loss_type: str = "focal_loss",
         beta: float = 0.999,
         fl_gamma=2,
-        samples_per_class=None,
-        class_balanced=False,
+        samples_per_class,
+        class_balanced=True,
     ):
         """
         Compute the Class Balanced Loss between `logits` and the ground truth `labels`.
