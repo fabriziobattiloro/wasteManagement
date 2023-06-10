@@ -119,7 +119,6 @@ class CB_loss(torch.nn.Module):
         loss_type: str = "focal_loss",
         beta: float = 0.999,
         fl_gamma=2,
-        samples_per_class=[1,1,1,1,1],
         class_balanced=True,
     ):
         """
@@ -148,7 +147,6 @@ class CB_loss(torch.nn.Module):
         self.loss_type = loss_type
         self.beta = beta
         self.fl_gamma = fl_gamma
-        self.samples_per_class = samples_per_class
         
         self.class_balanced = class_balanced
 
@@ -156,6 +154,7 @@ class CB_loss(torch.nn.Module):
         self,
         logits: torch.tensor,
         labels: torch.tensor,
+        samples_per_class
     ):
         """
         Compute the Class Balanced Loss between `logits` and the ground truth `labels`.
@@ -175,7 +174,7 @@ class CB_loss(torch.nn.Module):
         print(self.samples_per_class)
 
         if self.class_balanced:
-            effective_num = 1.0 - np.power(self.beta, self.samples_per_class)
+            effective_num = 1.0 - np.power(self.beta, samples_per_class)
             weights = (1.0 - self.beta) / np.array(effective_num)
             weights = weights / np.sum(weights) * num_classes
             weights = torch.tensor(weights, device=logits.device).float()
