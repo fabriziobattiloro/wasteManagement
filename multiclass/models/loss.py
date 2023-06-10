@@ -100,6 +100,7 @@ def focal_loss(logits, labels, alpha=1, gamma=2):
     loss = modulator * bc_loss
 
     if alpha is not None:
+        alpha = alpha.squeeze(1)
         weighted_loss = alpha * loss
         focal_loss = torch.sum(weighted_loss)
     else:
@@ -190,7 +191,7 @@ class CB_loss(torch.nn.Module):
                 print("weights dimensions:", weights.size())
                 weights = weights * labels_one_hot
                 weights = weights.sum(1)
-                weights = weights.squeeze(dim=1)
+        
                 print("weights dimensions:", weights.size())
                 
         else:
