@@ -103,8 +103,7 @@ def focal_loss(logits, labels, alpha=1, gamma=2):
         alpha= alpha.unsqueeze(1)
         alpha =alpha.repeat(1, 224, 1, 1)
         alpha =alpha.permute(0, 3, 1, 2)
-        print(alpha.size())
-        print(loss.size())
+        
         weighted_loss = alpha * loss
         focal_loss = torch.sum(weighted_loss)
     else:
@@ -184,19 +183,14 @@ class CB_loss(torch.nn.Module):
 
             if self.loss_type != "cross_entropy":
                 weights = weights.unsqueeze(0)
-                print("weights dimensions:", weights.size())
-                print("labels_one_hot dimensions:", labels_one_hot.size()) 
+                 
                 weights = weights.unsqueeze(1)
                 weights = weights.unsqueeze(2)
-                print("weights dimensions:", weights.size())
-                
                 weights = weights.repeat(batch_size, labels_one_hot.size(1), labels_one_hot.size(2), 1)
-
-                print("weights dimensions:", weights.size())
                 weights = weights * labels_one_hot
                 weights = weights.sum(1)
         
-                print("weights dimensions:", weights.size())
+                
                 
         else:
             weights = None
