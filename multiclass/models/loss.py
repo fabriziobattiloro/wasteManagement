@@ -189,18 +189,11 @@ class CB_loss(torch.nn.Module):
                 weights = weights * labels_one_hot
                 weights = weights.sum(1)
                 weights = weights.squeeze(dim=1)
+                print("weights dimensions:", weights.size())
                 
         else:
             weights = None
 
-        if self.loss_type == "focal_loss":
-            print("siuuuuummmm")
-            cb_loss = focal_loss(logits, labels_one_hot, alpha=weights, gamma=self.fl_gamma)
-        elif self.loss_type == "cross_entropy":
-            cb_loss = F.cross_entropy(input=logits, target=labels_one_hot, weight=weights)
-        elif self.loss_type == "binary_cross_entropy":
-            cb_loss = F.binary_cross_entropy_with_logits(input=logits, target=labels_one_hot, weight=weights)
-        elif self.loss_type == "softmax_binary_cross_entropy":
-            pred = logits.softmax(dim=1)
-            cb_loss = F.binary_cross_entropy(input=pred, target=labels_one_hot, weight=weights)
+        cb_loss = focal_loss(logits, labels_one_hot, alpha=weights, gamma=self.fl_gamma)
+       
         return cb_loss
