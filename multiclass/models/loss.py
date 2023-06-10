@@ -113,7 +113,7 @@ class CB_loss(torch.nn.Module):
         loss_type: str = "focal_loss",
         beta: float = 0.999,
         fl_gamma=2,
-        samples_per_class,
+        samples_per_class=None,
         class_balanced=True,
     ):
         """
@@ -143,6 +143,7 @@ class CB_loss(torch.nn.Module):
         self.beta = beta
         self.fl_gamma = fl_gamma
         self.samples_per_class = samples_per_class
+        print(self.sample_per_class)
         self.class_balanced = class_balanced
 
     def forward(
