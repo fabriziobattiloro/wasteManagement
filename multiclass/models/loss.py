@@ -121,11 +121,11 @@ class CB_loss(nn.Module):
         labels_one_hot = F.one_hot(labels.long(), self.no_of_classes).float()
 
         weights = torch.tensor(weights).float()
-        weights = weights.repeat(1, labels_one_hot.shape[1])  # Repeat along the second dimension
-        weights = weights * labels_one_hot  # Element-wise multiplication
+        weights = weights.unsqueeze(0)
+        weights = weights.repeat(labels_one_hot.shape[0],1) * labels_one_hot
         weights = weights.sum(1)
         weights = weights.unsqueeze(1)
-        weights = weights.repeat(1,self.no_of_classes)
+        weights = weights.repeat(1,no_of_classes)
 
         if self.loss_type == "focal":
             cb_loss = focal_loss(labels_one_hot, logits, weights, self.gamma)
