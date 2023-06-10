@@ -98,8 +98,11 @@ def focal_loss(logits, labels, alpha=1, gamma=2):
         modulator = torch.exp(-gamma * labels * logits - gamma * torch.log(1 + torch.exp(-1.0 * logits)))
 
     loss = modulator * bc_loss
-
+    
     if alpha is not None:
+        alpha= alpha.unsqueeze(1)
+        alpha =alpha.repeat(1, 224, 1, 1)
+        alpha =alpha.permute(0, 3, 1, 2)
         print(alpha.size())
         print(loss.size())
         weighted_loss = alpha * loss
