@@ -178,7 +178,7 @@ class CB_loss(torch.nn.Module):
             weights = (1.0 - self.beta) / np.array(effective_num)
             weights = weights / np.sum(weights) * num_classes
             weights = torch.tensor(weights, device=logits.device).float()
-            print("weights dimensions:", weights.size())
+            
             
 
             if self.loss_type != "cross_entropy":
