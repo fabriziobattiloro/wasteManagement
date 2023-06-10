@@ -50,7 +50,7 @@ class _BiSeHead(nn.Module):
         super(_BiSeHead, self).__init__()
         self.block = nn.Sequential(
             _ConvBNReLU(in_channels, inter_channels, 3, 1, 1, norm_layer=norm_layer),
-            nn.Dropout(0.2),
+            nn.Dropout(0.1),
             nn.Conv2d(inter_channels, nclass, 1)
         )
 
