@@ -8,6 +8,7 @@ import torch.nn.functional as F
 import torchvision
 
 from models.resnet import Resnet18
+from models.config import cfg
 
 from torch.nn import BatchNorm2d
 
