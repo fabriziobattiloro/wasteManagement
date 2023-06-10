@@ -47,7 +47,7 @@ def main():
         net=net.cuda()
 
     net.train()
-    class_counts = [1] * cfg.DATA.NUM_CLASSES
+    class_counts = [] * cfg.DATA.NUM_CLASSES
     criterion = CB_loss()
     criterion.cuda()
 
