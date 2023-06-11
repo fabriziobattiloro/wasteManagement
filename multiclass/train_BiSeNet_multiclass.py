@@ -74,7 +74,7 @@ def train(train_loader, net, criterion, optimizer, epoch, class_counts):
         labels = Variable(labels).cuda()
         
         for i in range(len(class_counts)):
-            print(class_counts[i] = 0)
+            print(class_counts[i] )
 
         outputs = net(inputs)
         out1, out2, out3= outputs
