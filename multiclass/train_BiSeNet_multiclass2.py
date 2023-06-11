@@ -12,7 +12,7 @@ import torchvision.transforms as standard_transforms
 import torchvision.utils as vutils
 from tensorboardX import SummaryWriter
 
-from models.model_BiSeNet2 import BiSeNet
+from models.model_BiSeNet2 import BiSeNetV1
 from models.config import cfg, __C
 from models.loading_data import loading_data
 from models.utils import *
@@ -39,7 +39,7 @@ def main():
     torch.backends.cudnn.benchmark = True
 
     net = []  
-    net = BiSeNet(cfg.DATA.NUM_CLASSES) 
+    net = BiSeNetV1(cfg.DATA.NUM_CLASSES) 
 
     if len(cfg.TRAIN.GPU_ID)>1:
         net = torch.nn.DataParallel(net, device_ids=cfg.TRAIN.GPU_ID).cuda()
@@ -107,10 +107,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
         inputs = Variable(inputs, volatile=True).cuda()
         labels = Variable(labels, volatile=True).cuda()
         outputs = net(inputs)
-        out1, out2, out3 = outputs
-
-        out1 = F.softmax(out1, dim=1)  # Apply softmax activation function along the channel dimension
-        
+        out1, out2, out3 = outputs        
         # For each pixel, determine the class with highest probability
         max_value, predicted = torch.max(out1.data, 1)  
         
