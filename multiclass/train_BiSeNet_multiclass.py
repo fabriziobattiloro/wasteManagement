@@ -72,9 +72,6 @@ def train(train_loader, net, criterion, optimizer, epoch, class_counts):
         inputs, labels = data
         inputs = Variable(inputs).cuda()
         labels = Variable(labels).cuda()
-        
-        for i in range(len(class_counts)):
-            print(class_counts[i] )
 
         outputs = net(inputs)
         out1, out2, out3= outputs
@@ -150,10 +147,6 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore, class_counts
             class_counts[c]=1
         print(f"pixels {c}: {class_counts[c]} pixels")
   
-    print("|||||||||||")
-    # Calculate average IoU score over all classes
-    #mean_classes[5] =float (iou_ / cfg.DATA.NUM_CLASSES)
-    #print(f"Mean IoU: {mean_iou:.4f}")
 
     net.train()
     criterion.cuda()
