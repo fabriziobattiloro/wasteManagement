@@ -72,6 +72,9 @@ def train(train_loader, net, criterion, optimizer, epoch, class_counts):
         inputs, labels = data
         inputs = Variable(inputs).cuda()
         labels = Variable(labels).cuda()
+        
+        for i in range(len(class_counts)):
+            print(lass_counts[i] = 0)
 
         outputs = net(inputs)
         out1, out2, out3= outputs
@@ -102,7 +105,8 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore, class_counts
     mean_classe3 = 0
     mean_classe4 = 0
     mean_tot = 0
-    class_counts = [0] 
+    for i in range(len(class_counts)):
+        class_counts[i] = 0
 
     
     for vi, data in enumerate(val_loader, 0):
