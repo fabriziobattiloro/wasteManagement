@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from models.config import cfg
-from models.resnet import resnet18
+from models.resnet import Resnet18
 from torch.nn import BatchNorm2d
 
 
