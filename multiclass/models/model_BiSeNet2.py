@@ -119,7 +119,7 @@ class ContextPath(nn.Module):
         super(ContextPath, self).__init__()
         if backbone == 'resnet18':
             pretrained = resnet18(pretrained=pretrained_base, **kwargs)
-        elif backbone == 'xception39'
+        elif backbone == 'xception39':
             pretrained = xception39()
         else:
             raise RuntimeError('unknown backbone: {}'.format(backbone))
