@@ -209,6 +209,7 @@ class Encoder(nn.Module):
                 pooling_stack.append(pooling_indices)
             else:
                 output = layer(output)
+        output = F.interpolate(output, scale_factor=2, mode='nearest')
 
         if self.state:
             output = F.upsample(output, cfg.TRAIN.IMG_SIZE, None, 'bilinear')
