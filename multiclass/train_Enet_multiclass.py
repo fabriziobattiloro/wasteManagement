@@ -54,9 +54,6 @@ def main():
         net = torch.nn.DataParallel(net, device_ids=cfg.TRAIN.GPU_ID).cuda()
     else:
         net=net.cuda()
-    # Move the weights to the GPU
-    for param in net.parameters():
-        param.data = param.data.cuda()
 
     net.train()
     criterion = torch.nn.CrossEntropyLoss().cuda() #loss multiclassification
@@ -64,19 +61,19 @@ def main():
     optimizer = optim.Adam(net.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
     scheduler = StepLR(optimizer, step_size=cfg.TRAIN.NUM_EPOCH_LR_DECAY, gamma=cfg.TRAIN.LR_DECAY)
     _t = {'train time' : Timer(),'val time' : Timer()} 
-    validate(val_loader, net, criterion, optimizer, -1, restore_transform)
+    validate(val_loader, net, criterion, optimizer, -1, restore_transform, num_workers=2)
     for epoch in range(cfg.TRAIN.MAX_EPOCH):
         _t['train time'].tic()
-        train(train_loader, net, criterion, optimizer, epoch)
+        train(train_loader, net, criterion, optimizer, epoch, num_workers)
         _t['train time'].toc(average=False)
         print('training time of one epoch: {:.2f}s'.format(_t['train time'].diff))
         _t['val time'].tic()
-        validate(val_loader, net, criterion, optimizer, epoch, restore_transform)
+        validate(val_loader, net, criterion, optimizer, epoch, restore_transform, num_workers)
         _t['val time'].toc(average=False)
         print('val time of one epoch: {:.2f}s'.format(_t['val time'].diff))
 
 
-def train(train_loader, net, criterion, optimizer, epoch):
+def train(train_loader, net, criterion, optimizer, epoch, num_workers=2):
     for i, data in enumerate(train_loader, 0):
         inputs, labels = data
         inputs = Variable(inputs).cuda()
@@ -90,7 +87,7 @@ def train(train_loader, net, criterion, optimizer, epoch):
         optimizer.step()
 
 
-def validate(val_loader, net, criterion, optimizer, epoch, restore):
+def validate(val_loader, net, criterion, optimizer, epoch, restore, num_workers=2):
     net.eval()
     criterion.cpu()
     input_batches = []
