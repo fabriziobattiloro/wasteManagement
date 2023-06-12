@@ -3,7 +3,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from models.resnet import resnet18
 from models.xception import Xception65
 from models.basic import _ConvBNReLU
 
