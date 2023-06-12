@@ -50,10 +50,10 @@ def main():
     elif cfg.TRAIN.STAGE =='encoder':
         net = ENet(only_encode=True)
 
-    #if len(cfg.TRAIN.GPU_ID)>1:
-        #net = torch.nn.DataParallel(net, device_ids=cfg.TRAIN.GPU_ID).cuda()
-    #else:
-       # net=net.cuda()
+    if len(cfg.TRAIN.GPU_ID)>1:
+        net = torch.nn.DataParallel(net, device_ids=cfg.TRAIN.GPU_ID).cuda()
+    else:
+        net=net.cuda()
 
     net.train()
     criterion = torch.nn.CrossEntropyLoss().cuda() #loss multiclassification
@@ -80,7 +80,7 @@ def train(train_loader, net, criterion, optimizer, epoch):
         labels = Variable(labels).cuda()
 
         optimizer.zero_grad()
-        outputs = net(inputs)
+        outputs = net(inputs.cpu())
         loss = criterion(outputs, labels)
        
         loss.backward()
@@ -104,7 +104,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
         inputs, labels = data
         inputs = Variable(inputs, volatile=True).cuda()
         labels = Variable(labels, volatile=True).cuda()
-        outputs = net(inputs)
+        outputs = net(inputs.cpu())
         
         out = F.softmax(outputs, dim=1)  # Apply softmax activation function along the channel dimension
         max_value, predicted = torch.max(out.data, 1)
