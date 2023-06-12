@@ -145,7 +145,7 @@ class BottleNeck(nn.Module):
 
         other_net = nn.Sequential(self.block1x1_1, self.middle_block,
                                   self.block1x1_2)
-        other = other_net(input.cpu())
+        other = other_net(input)
         output = F.relu(main + other)
         if (self.downsampling):
             return output, indices
