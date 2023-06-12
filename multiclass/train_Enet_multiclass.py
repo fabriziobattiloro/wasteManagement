@@ -54,6 +54,9 @@ def main():
         net = torch.nn.DataParallel(net, device_ids=cfg.TRAIN.GPU_ID).cuda()
     else:
         net=net.cuda()
+    # Move the weights to the GPU
+    for param in net.parameters():
+        param.data = param.data.cuda()
 
     net.train()
     criterion = torch.nn.CrossEntropyLoss().cuda() #loss multiclassification
