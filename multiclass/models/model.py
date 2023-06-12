@@ -176,10 +176,10 @@ class Encoder(nn.Module):
         
         # Section 2 and 3
         layers.append(BottleNeck(64, 128, downsampling=True))
-        layers.append(BottleNeck(64, 128, downsampling=True))
-        layers.append(BottleNeck(64, 128, downsampling=True))
-        layers.append(BottleNeck(64, 128, downsampling=True))
-        layers.append(BottleNeck(64, 128, downsampling=True))
+        layers.append(BottleNeck(128, 128, downsampling=True))
+        layers.append(BottleNeck(128, 128, downsampling=True))
+        layers.append(BottleNeck(128, 128, downsampling=True))
+        layers.append(BottleNeck(128, 128, downsampling=True))
         for i in range(2):
             layers.append(BottleNeck(128, 128))
             layers.append(BottleNeck(128, 128, dilated=True, dilation_rate=2))
