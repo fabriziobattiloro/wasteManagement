@@ -202,7 +202,7 @@ class Encoder(nn.Module):
     
     def forward(self, input):
         pooling_stack = []
-        output = input.cpu()
+        output = input
         for layer in self.layers:
             if hasattr(layer, 'downsampling') and layer.downsampling:
                 output, pooling_indices = layer(output)
