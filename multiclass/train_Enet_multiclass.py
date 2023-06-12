@@ -50,10 +50,10 @@ def main():
     elif cfg.TRAIN.STAGE =='encoder':
         net = ENet(only_encode=True)
 
-    if len(cfg.TRAIN.GPU_ID)>1:
-        net = torch.nn.DataParallel(net, device_ids=cfg.TRAIN.GPU_ID).cuda()
-    else:
-        net=net.cuda()
+    #if len(cfg.TRAIN.GPU_ID)>1:
+        #net = torch.nn.DataParallel(net, device_ids=cfg.TRAIN.GPU_ID).cuda()
+    #else:
+       # net=net.cuda()
 
     net.train()
     criterion = torch.nn.CrossEntropyLoss().cuda() #loss multiclassification
