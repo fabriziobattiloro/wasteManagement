@@ -193,10 +193,8 @@ class Encoder(nn.Module):
             layers.append(BottleNeck(128, 128, dilated=True, dilation_rate=8))
             layers.append(BottleNeck(128, 128, asymmetric=True))
             layers.append(BottleNeck(128, 128, dilated=True, dilation_rate=16))
-            layers.append(BottleNeck(128, 128))
-            layers.append(BottleNeck(128, 128, dilated=True, dilation_rate=8))
-            layers.append(BottleNeck(128, 128, asymmetric=True))
-            layers.append(BottleNeck(128, 128, dilated=True, dilation_rate=16))
+            
+      
             
         # only training encoder
         if only_encode:
