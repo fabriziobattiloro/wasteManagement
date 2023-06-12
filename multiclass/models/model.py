@@ -171,10 +171,14 @@ class Encoder(nn.Module):
         layers.append(InitialBlock())
         layers.append(BottleNeck(16, 64, regularlizer_prob=0.01,
                                  downsampling=True))
-        for i in range(6):
+        for i in range(4):
             layers.append(BottleNeck(64, 64, regularlizer_prob=0.01))
         
         # Section 2 and 3
+        layers.append(BottleNeck(64, 128, downsampling=True))
+        layers.append(BottleNeck(64, 128, downsampling=True))
+        layers.append(BottleNeck(64, 128, downsampling=True))
+        layers.append(BottleNeck(64, 128, downsampling=True))
         layers.append(BottleNeck(64, 128, downsampling=True))
         for i in range(2):
             layers.append(BottleNeck(128, 128))
