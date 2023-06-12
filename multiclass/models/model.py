@@ -23,6 +23,8 @@ class InitialBlock(nn.Module):
         self.batch_norm = nn.BatchNorm2d(13, 1e-3)
         self.prelu = nn.PReLU(13)
         self.pool = nn.MaxPool2d(2, stride=2)
+        self.weight = self.weight.to(device)
+
 
     def forward(self, input):
         output = torch.cat([
