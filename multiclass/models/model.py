@@ -1,4 +1,4 @@
-from models.config import cfg
+from config import cfg
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -23,11 +23,11 @@ class InitialBlock(nn.Module):
         self.batch_norm = nn.BatchNorm2d(13, 1e-3)
         self.prelu = nn.PReLU(13)
         self.pool = nn.MaxPool2d(2, stride=2)
-       
 
     def forward(self, input):
-        self.conv.weight = self.conv.weight.cuda()
-        output = torch.cat([self.prelu(self.batch_norm(self.conv(input.cuda()))), self.pool(input.cuda())], 1)
+        output = torch.cat([
+            self.prelu(self.batch_norm(self.conv(input))), self.pool(input)
+        ], 1)
         return output
 
 
@@ -171,12 +171,12 @@ class Encoder(nn.Module):
         layers.append(InitialBlock())
         layers.append(BottleNeck(16, 64, regularlizer_prob=0.01,
                                  downsampling=True))
-        for i in range(8):
+        for i in range(4):
             layers.append(BottleNeck(64, 64, regularlizer_prob=0.01))
         
         # Section 2 and 3
         layers.append(BottleNeck(64, 128, downsampling=True))
-        for i in range(4):
+        for i in range(2):
             layers.append(BottleNeck(128, 128))
             layers.append(BottleNeck(128, 128, dilated=True, dilation_rate=2))
             layers.append(BottleNeck(128, 128, asymmetric=True))
