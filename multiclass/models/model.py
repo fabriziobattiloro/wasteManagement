@@ -26,7 +26,7 @@ class InitialBlock(nn.Module):
 
     def forward(self, input):
         output = torch.cat([
-            self.prelu(self.batch_norm(self.conv(input.cpu()))), self.pool(input)
+            self.prelu(self.batch_norm(self.conv(input))), self.pool(input)
         ], 1)
         return output
 
