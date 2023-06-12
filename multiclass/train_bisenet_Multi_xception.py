@@ -12,7 +12,7 @@ import torchvision.transforms as standard_transforms
 import torchvision.utils as vutils
 from tensorboardX import SummaryWriter
 
-from models.model_BiSeNet2 import BiSeNet
+from models.model_BiSeNet_xception import BiSeNet
 from models.config import cfg, __C
 from models.loading_data import loading_data
 from models.utils import *
@@ -39,7 +39,7 @@ def main():
     torch.backends.cudnn.benchmark = True
 
     net = []  
-    net = BiSeNet(cfg.DATA.NUM_CLASSES, 'resent18') 
+    net = BiSeNet(cfg.DATA.NUM_CLASSES, 'xception39') 
 
     if len(cfg.TRAIN.GPU_ID)>1:
         net = torch.nn.DataParallel(net, device_ids=cfg.TRAIN.GPU_ID).cuda()
