@@ -26,7 +26,7 @@ class InitialBlock(nn.Module):
        
 
     def forward(self, input):
-        self.conv.weight = self.conv.weight.to(device)
+        self.conv.weight = self.conv.weight.cuda()
         output = torch.cat([self.prelu(self.batch_norm(self.conv(input))), self.pool(input)], 1)
         return output
 
