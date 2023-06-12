@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from models.resnet import resnet18
-from models.xception import xception39
+from models.xception import Xception65
 from models.basic import _ConvBNReLU
 
 __all__ = ['BiSeNet', 'get_bisenet', 'get_bisenet_resnet18_citys']
@@ -120,7 +120,7 @@ class ContextPath(nn.Module):
         if backbone == 'resnet18':
             pretrained = resnet18(pretrained=pretrained_base, **kwargs)
         elif backbone == 'xception39':
-            pretrained = xception39()
+            pretrained = Xception65()
         else:
             raise RuntimeError('unknown backbone: {}'.format(backbone))
         self.conv1 = pretrained.conv1
