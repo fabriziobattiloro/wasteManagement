@@ -162,9 +162,9 @@ ENCODER_LAYER_NAMES = ['initial', 'bottleneck_1_0', 'bottleneck_1_1',
                        'bottleneck_4_1', 'bottleneck_4_2', 'bottleneck_4_3'
                        'bottleneck_4_4', 'bottleneck_4_5', 'bottleneck_4_6'
                        'bottleneck_4_7', 'bottleneck_4_7', 
-                       'bottleneck_5_1', 'bottleneck_5_2', 'bottleneck_5_3'
-                       'bottleneck_5_4', 'bottleneck_5_5', 'bottleneck_5_6'
-                       'bottleneck_5_7', 'bottleneck_5_7', 
+                       #'bottleneck_5_1', 'bottleneck_5_2', 'bottleneck_5_3'
+                       #'bottleneck_5_4', 'bottleneck_5_5', 'bottleneck_5_6'
+                       #'bottleneck_5_7', 'bottleneck_5_7', 
                        'classifier']
 DECODER_LAYER_NAMES = ['bottleneck_4_0d', 'bottleneck_4_1d', 'bottleneck_4_2d'
                        'bottleneck_5_0d', 'bottleneck_5_1d', 'fullconv']
@@ -183,7 +183,7 @@ class Encoder(nn.Module):
         
         # Section 2 and 3
         layers.append(BottleNeck(64, 128, downsampling=True))
-        for i in range(4):
+        for i in range(3):
             layers.append(BottleNeck(128, 128))
             layers.append(BottleNeck(128, 128, dilated=True, dilation_rate=2))
             layers.append(BottleNeck(128, 128, asymmetric=True))
