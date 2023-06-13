@@ -7,8 +7,6 @@ from models.resnet import resnet18, resnet50, resnet152, resnet34
 from models.config import cfg
 from models.basic import _ConvBNReLU
 
-__all__ = ['BiSeNet', 'get_bisenet', 'get_bisenet_resnet18_citys']
-
 
 class BiSeNet(nn.Module):
     def __init__(self, nclass, backbone, aux=True, jpu=True, pretrained_base=False, **kwargs):
