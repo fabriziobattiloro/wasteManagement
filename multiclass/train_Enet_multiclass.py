@@ -57,7 +57,7 @@ def main():
         net=net.cuda()
 
     net.train()
-    awl = AutomaticWeightedLoss(2)
+    #awl = AutomaticWeightedLoss(2)
     criterion = torch.nn.CrossEntropyLoss().cuda() #loss multiclassification
 
     optimizer = optim.Adam(net.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
@@ -84,10 +84,10 @@ def train(train_loader, net, criterion, optimizer, epoch, awl):
         optimizer.zero_grad()
         outputs = net(inputs)
         loss1 = criterion(outputs, labels)
-        loss2 = criterion(outputs, labels)
-        loss_awl = awl(loss1, loss2)
+        #loss_awl = awl(loss1, loss2)
         optimizer.zero_grad()
-        loss_awl.backward()
+        loss1.backward()
+        #loss_awl.backward()
         optimizer.step()
 
 def validate(val_loader, net, criterion, optimizer, epoch, restore):
