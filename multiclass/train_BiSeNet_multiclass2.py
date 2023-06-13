@@ -132,6 +132,8 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
     print(f"Class tot: {mean_tot / len(val_loader):.4f}")
   
   
+    model_size = compute_model_size(net)
+    print('Model size %.4f' % (model_size))
     # Calculate average IoU score over all classes
     #mean_classes[5] =float (iou_ / cfg.DATA.NUM_CLASSES)
     #print(f"Mean IoU: {mean_iou:.4f}")

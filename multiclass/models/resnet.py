@@ -157,49 +157,31 @@ class ResNet(nn.Module):
         return x
 
 
-def resnet18(pretrained=False, **kwargs):
-    """Constructs a ResNet-18 model.
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-    """
+def resnet18(**kwargs):
+   
     model = ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
     return model
 
 
-def resnet34(pretrained=False, **kwargs):
-    """Constructs a ResNet-34 model.
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-    """
+def resnet34(**kwargs):
+
     model = ResNet(BasicBlock, [3, 4, 6, 3], **kwargs)
-    if pretrained:
-        model.load_state_dict(model_zoo.load_url(model_urls['resnet34']))
-    return model
 
 
-def resnet50(pretrained, **kwargs):
-    """Constructs a ResNet-50 model.
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-    """
+def resnet50(**kwargs):
+    
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
     return model
 
 
 def resnet101(**kwargs):
-    """Constructs a ResNet-101 model.
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-    """
+    
     model = ResNet(Bottleneck, [3, 4, 23, 3], **kwargs)
     return model
 
 
 def resnet152(**kwargs):
-    """Constructs a ResNet-152 model.
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-    """
+    
     model = ResNet(Bottleneck, [3, 8, 36, 3], **kwargs)
 
 
