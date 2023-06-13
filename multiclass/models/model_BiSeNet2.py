@@ -3,8 +3,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from models.resnet import resnet18
-from models.xception import Xception65
+from models.resnet import resnet18, resnet50
+from models.config import cfg
 from models.basic import _ConvBNReLU
 
 __all__ = ['BiSeNet', 'get_bisenet', 'get_bisenet_resnet18_citys']
@@ -118,9 +118,9 @@ class ContextPath(nn.Module):
     def __init__(self, backbone='resnet18', pretrained_base=False, norm_layer=nn.BatchNorm2d, **kwargs):
         super(ContextPath, self).__init__()
         if backbone == 'resnet18':
-            pretrained = resnet18(pretrained=pretrained_base, **kwargs)
-        elif backbone == 'xception39':
-            pretrained = Xception65()
+            pretrained = resnet18( **kwargs)
+        elif backbone == 'resnet50':
+            pretrained = resnet50(**kwargs)
         else:
             raise RuntimeError('unknown backbone: {}'.format(backbone))
         self.conv1 = pretrained.conv1
@@ -194,30 +194,7 @@ class FeatureFusion(nn.Module):
         return out
 
 
-def get_bisenet(dataset='citys', backbone='resnet18', pretrained=False, root='~/.torch/models',
-                pretrained_base=True, **kwargs):
-    acronyms = {
-        'pascal_voc': 'pascal_voc',
-        'pascal_aug': 'pascal_aug',
-        'ade20k': 'ade',
-        'coco': 'coco',
-        'citys': 'citys',
-    }
-    from ..data.dataloader import datasets
-    model = BiSeNet(datasets[dataset].NUM_CLASS, backbone=backbone, pretrained_base=pretrained_base, **kwargs)
-    if pretrained:
-        from .model_store import get_model_file
-        device = torch.device(kwargs['local_rank'])
-        model.load_state_dict(torch.load(get_model_file('bisenet_%s_%s' % (backbone, acronyms[dataset]), root=root),
-                              map_location=device))
-    return model
-
-
-def get_bisenet_resnet18_citys(**kwargs):
-    return get_bisenet('citys', 'resnet18', **kwargs)
-
-
 if __name__ == '__main__':
     img = torch.randn(2, 3, 224, 224)
-    model = BiSeNet(5, backbone='resnet18')
+    model = BiSeNet(cfg.DATA.NUM_CLASSES, backbone='resnet18')
     print(model.exclusive)
