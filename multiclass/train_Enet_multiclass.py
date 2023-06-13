@@ -56,8 +56,8 @@ def main():
         net=net.cuda()
 
     net.train()
-    #criterion = criterion = torch.nn.CrossEntropyLoss().cuda() #loss multiclassification
-    criterion = FocalLoss()
+    criterion = criterion = torch.nn.CrossEntropyLoss().cuda() #loss multiclassification
+    #criterion = FocalLoss()
 
     optimizer = optim.Adam(net.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
     scheduler = StepLR(optimizer, step_size=cfg.TRAIN.NUM_EPOCH_LR_DECAY, gamma=cfg.TRAIN.LR_DECAY)
