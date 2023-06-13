@@ -1,5 +1,6 @@
 import torch.nn as nn
 import torch.utils.model_zoo as model_zoo
+from models.config import cfg
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
            'resnet152']
@@ -91,7 +92,7 @@ class Bottleneck(nn.Module):
 
 class ResNet(nn.Module):
 
-    def __init__(self, block, layers, num_classes=1000, zero_init_residual=False, norm_layer=nn.BatchNorm2d):
+    def __init__(self, block, layers, num_classes=cfg.DATA.NUM_CLASSES, zero_init_residual=False, norm_layer=nn.BatchNorm2d):
         super(ResNet, self).__init__()
         self.inplanes = 64
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3,
@@ -183,10 +184,4 @@ def resnet101(**kwargs):
 def resnet152(**kwargs):
     
     model = ResNet(Bottleneck, [3, 8, 36, 3], **kwargs)
-
-
-if __name__ == '__main__':
-    import torch
-    img = torch.randn(4, 3, 224, 224)
-    model = resnet50(True)
-    output = model(img)
+    return model
