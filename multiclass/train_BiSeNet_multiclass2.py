@@ -79,9 +79,11 @@ def train(train_loader, net, criterion, optimizer, epoch, awl):
         loss0 = criterion(out0, labels)
         loss1 = criterion(out1, labels)
         loss2 = criterion(out2, labels)
-        loss_awl = awl(loss1, loss2, loss0)
+        loss=loss0+loss1+loss2
+        #loss_awl = awl(loss1, loss2, loss0)
         optimizer.zero_grad()
-        loss_awl.backward()
+        loss.backward()
+        #loss_awl.backward()
         optimizer.step()
 
 
