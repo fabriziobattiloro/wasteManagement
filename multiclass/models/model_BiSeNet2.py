@@ -117,10 +117,14 @@ class AttentionRefinmentModule(nn.Module):
 class ContextPath(nn.Module):
     def __init__(self, backbone, pretrained_base=False, norm_layer=nn.BatchNorm2d, **kwargs):
         super(ContextPath, self).__init__()
+        inter_channels = 128
+        in_channels = 512
         if backbone == 'resnet18':
             pretrained = resnet18(**kwargs)
         elif backbone == 'resnet50':
             pretrained = resnet50(**kwargs)
+            in_channels = 2048
+            inter_channels = 16
         else:
             raise RuntimeError('unknown backbone: {}'.format(backbone))
         self.conv1 = pretrained.conv1
@@ -133,7 +137,7 @@ class ContextPath(nn.Module):
         self.layer4 = pretrained.layer4
 
         inter_channels = 128
-        self.global_context = _GlobalAvgPooling(512, inter_channels, norm_layer)
+        self.global_context = _GlobalAvgPooling(in_channels, inter_channels, norm_layer)
 
         self.arms = nn.ModuleList(
             [AttentionRefinmentModule(512, inter_channels, norm_layer, **kwargs),
