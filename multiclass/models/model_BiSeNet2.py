@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from models.resnet import resnet18, resnet50, resnet152
+from models.resnet import resnet18, resnet50, resnet152, resnet34
 from models.config import cfg
 from models.basic import _ConvBNReLU
 
@@ -120,6 +120,8 @@ class ContextPath(nn.Module):
         input_channels = 512
         if backbone == 'resnet18':
             pretrained = resnet18(**kwargs)
+        elif backbone == 'resnet34':
+            pretrained = resnet34(**kwargs)
         elif backbone == 'resnet50':
             pretrained = resnet50(**kwargs)
             input_channels = 2048
@@ -140,19 +142,13 @@ class ContextPath(nn.Module):
         inter_channels = 128
         self.global_context = _GlobalAvgPooling(input_channels, inter_channels, norm_layer)
 
-        if backbone == 'resnet50':
+        if backbone in ['resnet50', 'resnet152']:
             self.arms = nn.ModuleList(
             [AttentionRefinmentModule(2048, inter_channels, norm_layer, **kwargs),
              AttentionRefinmentModule(1024, inter_channels, norm_layer, **kwargs),
              AttentionRefinmentModule(512, inter_channels, norm_layer, **kwargs),
              AttentionRefinmentModule(256, inter_channels, norm_layer, **kwargs)]
         )
-        if backbone == 'resnet152'
-            self.arms = nn.ModuleList(
-            [AttentionRefinmentModule(2048, inter_channels, norm_layer, **kwargs),
-             AttentionRefinmentModule(1024, inter_channels, norm_layer, **kwargs),
-             AttentionRefinmentModule(512, inter_channels, norm_layer, **kwargs),
-             AttentionRefinmentModule(256, inter_channels, norm_layer, **kwargs)]
         else:
             self.arms = nn.ModuleList(
                 [AttentionRefinmentModule(512, inter_channels, norm_layer, **kwargs),
