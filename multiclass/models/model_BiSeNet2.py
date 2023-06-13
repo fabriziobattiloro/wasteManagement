@@ -136,8 +136,8 @@ class ContextPath(nn.Module):
         self.global_context = _GlobalAvgPooling(2048, inter_channels, norm_layer)
 
         self.arms = nn.ModuleList(
-            [AttentionRefinmentModule(512, inter_channels, norm_layer, **kwargs),
-             AttentionRefinmentModule(256, inter_channels, norm_layer, **kwargs)]
+            [AttentionRefinmentModule(2048, inter_channels, norm_layer, **kwargs),
+             AttentionRefinmentModule(512, inter_channels, norm_layer, **kwargs)]
         )
         self.refines = nn.ModuleList(
             [_ConvBNReLU(inter_channels, inter_channels, 3, 1, 1, norm_layer=norm_layer),
