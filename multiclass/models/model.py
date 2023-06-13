@@ -158,9 +158,16 @@ ENCODER_LAYER_NAMES = ['initial', 'bottleneck_1_0', 'bottleneck_1_1',
                        'bottleneck_2_6', 'bottleneck_2_7', 'bottleneck_2_8',
                        'bottleneck_3_1', 'bottleneck_3_2', 'bottleneck_3_3',
                        'bottleneck_3_4', 'bottleneck_3_5', 'bottleneck_3_6',
-                       'bottleneck_3_7', 'bottleneck_3_8', 'classifier']
-DECODER_LAYER_NAMES = ['bottleneck_4_0', 'bottleneck_4_1', 'bottleneck_4_2'
-                       'bottleneck_5_0', 'bottleneck_5_1', 'fullconv']
+                       'bottleneck_3_7', 'bottleneck_3_8',
+                       'bottleneck_4_1', 'bottleneck_4_2', 'bottleneck_4_3'
+                       'bottleneck_4_4', 'bottleneck_4_5', 'bottleneck_4_6'
+                       'bottleneck_4_7', 'bottleneck_4_7', 
+                       'bottleneck_5_1', 'bottleneck_5_2', 'bottleneck_5_3'
+                       'bottleneck_5_4', 'bottleneck_5_5', 'bottleneck_5_6'
+                       'bottleneck_5_7', 'bottleneck_5_7', 
+                       'classifier']
+DECODER_LAYER_NAMES = ['bottleneck_4_0d', 'bottleneck_4_1d', 'bottleneck_4_2d'
+                       'bottleneck_5_0d', 'bottleneck_5_1d', 'fullconv']
 
 
 class Encoder(nn.Module):
@@ -176,7 +183,7 @@ class Encoder(nn.Module):
         
         # Section 2 and 3
         layers.append(BottleNeck(64, 128, downsampling=True))
-        for i in range(2):
+        for i in range(4):
             layers.append(BottleNeck(128, 128))
             layers.append(BottleNeck(128, 128, dilated=True, dilation_rate=2))
             layers.append(BottleNeck(128, 128, asymmetric=True))
@@ -187,7 +194,7 @@ class Encoder(nn.Module):
             layers.append(BottleNeck(128, 128, dilated=True, dilation_rate=16))
         # only training encoder
         if only_encode:
-            layers.append(nn.Conv2d(128, num_classes, 1))
+            layers.append(nn.Conv2d(128, num_classes, 1, device='cuda: 0'))
 
         for layer, layer_name in zip(layers, ENCODER_LAYER_NAMES):
             super(Encoder, self).__setattr__(layer_name, layer)
