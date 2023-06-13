@@ -140,7 +140,7 @@ class ContextPath(nn.Module):
         inter_channels = 128
         self.global_context = _GlobalAvgPooling(input_channels, inter_channels, norm_layer)
 
-        if backbone == 'resnet152':
+        if backbone == 'resnet50':
             self.arms = nn.ModuleList(
             [AttentionRefinmentModule(2048, inter_channels, norm_layer, **kwargs),
              AttentionRefinmentModule(1024, inter_channels, norm_layer, **kwargs),
