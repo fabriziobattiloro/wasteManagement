@@ -194,7 +194,7 @@ class Encoder(nn.Module):
             layers.append(BottleNeck(128, 128, dilated=True, dilation_rate=16))
         # only training encoder
         if only_encode:
-            layers.append(nn.Conv2d(128, num_classes, 1, device='cuda: 0'))
+            layers.append(nn.Conv2d(128, num_classes, 1, device='cuda: 0')).cuda()
 
         for layer, layer_name in zip(layers, ENCODER_LAYER_NAMES):
             super(Encoder, self).__setattr__(layer_name, layer)
