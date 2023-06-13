@@ -144,8 +144,7 @@ class ContextPath(nn.Module):
             self.arms = nn.ModuleList(
             [AttentionRefinmentModule(2048, inter_channels, norm_layer, **kwargs),
              AttentionRefinmentModule(1024, inter_channels, norm_layer, **kwargs),
-             AttentionRefinmentModule(512, inter_channels, norm_layer, **kwargs),
-             AttentionRefinmentModule(256, inter_channels, norm_layer, **kwargs)]
+             AttentionRefinmentModule(512, inter_channels, norm_layer, **kwargs),]
         )
         else:
             self.arms = nn.ModuleList(
