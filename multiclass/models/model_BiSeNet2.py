@@ -118,7 +118,7 @@ class ContextPath(nn.Module):
     def __init__(self, backbone='resnet18', pretrained_base=False, norm_layer=nn.BatchNorm2d, **kwargs):
         super(ContextPath, self).__init__()
         if backbone == 'resnet18':
-            pretrained = resnet18( **kwargs)
+            pretrained = resnet18(**kwargs)
         elif backbone == 'resnet50':
             pretrained = resnet50(**kwargs)
         else:
