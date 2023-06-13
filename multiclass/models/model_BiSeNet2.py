@@ -115,7 +115,7 @@ class AttentionRefinmentModule(nn.Module):
 
 
 class ContextPath(nn.Module):
-    def __init__(self, backbone='resnet18', pretrained_base=False, norm_layer=nn.BatchNorm2d, **kwargs):
+    def __init__(self, backbone, pretrained_base=False, norm_layer=nn.BatchNorm2d, **kwargs):
         super(ContextPath, self).__init__()
         if backbone == 'resnet18':
             pretrained = resnet18(**kwargs)
