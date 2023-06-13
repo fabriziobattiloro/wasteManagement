@@ -137,7 +137,7 @@ class ContextPath(nn.Module):
 
         self.arms = nn.ModuleList(
             [AttentionRefinmentModule(2048, inter_channels, norm_layer, **kwargs),
-             AttentionRefinmentModule(512, inter_channels, norm_layer, **kwargs)]
+             AttentionRefinmentModule(1024, inter_channels, norm_layer, **kwargs)]
         )
         self.refines = nn.ModuleList(
             [_ConvBNReLU(inter_channels, inter_channels, 3, 1, 1, norm_layer=norm_layer),
