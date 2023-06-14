@@ -47,8 +47,8 @@ def main():
         net=net.cuda()
 
     net.train()
-    #criterion = torch.nn.CrossEntropyLoss()
-    criterion = FocalLoss()
+    criterion = torch.nn.CrossEntropyLoss()
+    #criterion = FocalLoss()
     criterion.cuda()
 
    
