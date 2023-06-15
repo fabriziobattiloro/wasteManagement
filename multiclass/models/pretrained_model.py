@@ -4,6 +4,8 @@ import torchvision.transforms as transforms
 from torch.autograd import Variable
 from models.config import cfg
 from torch import optim
+import torch.nn.functional as F
+
 
 
 def train_pretrained(train_loader, test_loader):
