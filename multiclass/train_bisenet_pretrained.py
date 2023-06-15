@@ -40,7 +40,7 @@ def main():
         torch.cuda.set_device(cfg.TRAIN.GPU_ID[0])
     torch.backends.cudnn.benchmark = True
 
-    train_pretrained(train_loader_rotated, val_loader_rotated)
+    train_pretrained()
 
     net = []  
     net = BiSeNet(cfg.DATA.NUM_CLASSES) 
@@ -53,9 +53,6 @@ def main():
     net.train()
     criterion = torch.nn.CrossEntropyLoss()
     criterion.cuda()
-
-    criterion_pretrained = torch.nn.CrossEntropyLoss()
-    criterion_pretrained.cuda()
 
    
     optimizer = optim.Adam(net.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
@@ -73,31 +70,6 @@ def main():
         _t['val time'].toc(average=False)
         print('val time of one epoch: {:.2f}s'.format(_t['val time'].diff))
 
-def self_supervised_pretrain(train_loader, net, criterion_pretrained, optimizer, epoch):
-    total_loss = 0.0
-
-    for i, data in enumerate(train_loader, 0):
-        inputs, rotations_label = data
-        inputs = Variable(inputs).cuda()
-        labels = Variable(rotations_label).cuda()
-
-        outputs = net(inputs)
-        out1, out2, out3= outputs
-        # Resize the labels tensor to match the output tensor dimensions
-
-        loss1 = criterion_pretrained(out1, labels)
-        loss2 = criterion_pretrained(out2, labels)
-        loss3 = criterion_pretrained(out3, labels)
-
-        losses = loss1 + loss2 + loss3
-        optimizer.zero_grad()
-        losses.backward()
-        optimizer.step()
-
-        total_loss += losses.item()
-
-    average_loss = total_loss / len(train_loader)
-    print(f"Epoch [{epoch}/{cfg.TRAIN.MAX_EPOCH_PRETRAINED}]: Self-supervised Loss: {average_loss:.4f}")
 
 def train(train_loader, net, criterion, optimizer, epoch):
     for i, data in enumerate(train_loader, 0):
