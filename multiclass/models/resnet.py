@@ -172,9 +172,11 @@ def resnet34(**kwargs):
     return model
 
 
-def resnet50(**kwargs):
+def resnet50(pretrained, **kwargs):
     
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
+    if pretrained:
+        model.load_state_dict(model_zoo.load_url('https://drive.google.com/file/d/1IsLjo1m1mP2-G9fwY-Hpeuw2asqqA0MT/view?usp=sharing'))
     return model
 
 
