@@ -6,6 +6,7 @@ from torch.autograd import Variable
 def train_pretrained(train_loader, test_loader):
 
     model = torchvision.models.resnet18(pretrained=False)
+    model.cuda()
 
     # Define the loss function and the optimizer
     criterion = torch.nn.CrossEntropyLoss().cuda()
