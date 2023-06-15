@@ -9,7 +9,7 @@ from models.basic import _ConvBNReLU
 
 
 class BiSeNet(nn.Module):
-    def __init__(self, nclass, backbone, aux=False, jpu=False, pretrained_base=False, **kwargs):
+    def __init__(self, nclass, backbone, aux=False, jpu=False, pretrained_base=True, **kwargs):
         super(BiSeNet, self).__init__()
         self.aux = aux
         self.spatial_path = SpatialPath(3, 128, **kwargs)

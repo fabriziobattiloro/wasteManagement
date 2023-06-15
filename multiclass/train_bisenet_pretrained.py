@@ -12,13 +12,13 @@ import torchvision.utils as vutils
 from tensorboardX import SummaryWriter
 import torch.nn.functional as F
 
-from models.model_BiSeNet2 import BiSeNet
+from models.pretrained_model_bisenet import BiSeNet
 from models.config import cfg, __C
 from models.loading_data import loading_data
 from models.utils import *
 from models.timer import Timer
 from models.loss import MixSoftmaxCrossEntropyLoss
-from models.pretrained_model import train_rotation_model
+from multiclass.models.pretrained_model_bisenet import train_rotation_model
 import pdb
 
 exp_name = cfg.TRAIN.EXP_NAME
@@ -41,7 +41,7 @@ def main():
     train_rotation_model()
 
     net = []  
-    net = BiSeNet(cfg.DATA.NUM_CLASSES) 
+    net = BiSeNet(cfg.DATA.NUM_CLASSES, 'resnet50') 
 
     if len(cfg.TRAIN.GPU_ID)>1:
         net = torch.nn.DataParallel(net, device_ids=cfg.TRAIN.GPU_ID).cuda()

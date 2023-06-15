@@ -162,7 +162,7 @@ def resnet18(pretrained, **kwargs):
    
     model = ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
     if pretrained:
-        model.load_state_dict(torch.load('./model.pth'))
+        model.load_state_dict(model_zoo.load_url('https://drive.google.com/file/d/1IsLjo1m1mP2-G9fwY-Hpeuw2asqqA0MT/view?usp=sharing'))
     return model
 
 
