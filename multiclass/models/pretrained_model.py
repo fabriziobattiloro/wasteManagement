@@ -1,6 +1,7 @@
 import torch
 import torchvision
 import torchvision.transforms as transforms
+from torch.autograd import Variable
 
 def train_pretrained(train_loader, test_loader):
 
