@@ -18,7 +18,7 @@ from models.loading_data import loading_data
 from models.utils import *
 from models.timer import Timer
 from models.loss import MixSoftmaxCrossEntropyLoss
-from multiclass.models.pretrained_model_bisenet import train_rotation_model
+from multiclass.models.pretrained_model_bisenet import BiSeNet
 import pdb
 
 exp_name = cfg.TRAIN.EXP_NAME
