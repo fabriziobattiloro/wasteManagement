@@ -3,6 +3,7 @@ import torch.nn as nn
 import torchvision.transforms as transforms
 from torchvision.models import resnet18
 import torchvision
+import os
 
 def train_rotation_model():
     # Define the self-supervised rotation model
@@ -27,6 +28,10 @@ def train_rotation_model():
         ]),
         transforms.ToTensor()
     ])
+
+    temp_dir = "/kaggle/input/resortit/dataset"
+    class_folder = os.path.join(temp_dir, "train")
+    os.makedirs(class_folder, exist_ok=True)
 
     dataset = torchvision.datasets.ImageFolder("/kaggle/input/resortit/dataset/train", transform=transform)
 
