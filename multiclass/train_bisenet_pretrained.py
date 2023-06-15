@@ -40,7 +40,7 @@ def main():
         torch.cuda.set_device(cfg.TRAIN.GPU_ID[0])
     torch.backends.cudnn.benchmark = True
 
-    train_pretrained()
+    train_pretrained(train_loader_rotated, val_loader_rotated)
 
     net = []  
     net = BiSeNet(cfg.DATA.NUM_CLASSES) 

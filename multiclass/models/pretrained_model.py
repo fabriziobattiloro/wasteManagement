@@ -2,24 +2,9 @@ import torch
 import torchvision
 import torchvision.transforms as transforms
 
-def train_pretrained():
+def train_pretrained(train_loader, test_loader):
 
     model = torchvision.models.resnet18(pretrained=False)
-
-    # Define the data transformation
-    transform = transforms.Compose([
-        transforms.RandomRotation(180),
-        transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-    ])
-
-    # Load the training data
-    train_dataset = torchvision.datasets.ImageFolder(root='/kaggle/input/resortit/dataset/train', transform=transform)
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=128, shuffle=True)
-
-    # Load the test data
-    test_dataset = torchvision.datasets.ImageFolder(root='/kaggle/input/resortit/dataset/val', transform=transform)
-    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=128, shuffle=False)
 
     # Define the loss function and the optimizer
     criterion = torch.nn.CrossEntropyLoss()
