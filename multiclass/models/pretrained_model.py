@@ -28,11 +28,9 @@ def train_pretrained(train_loader, test_loader):
             labels = Variable(labels).cuda()
 
             # Generate random rotation labels (0, 1, 2, 3)
-            rotation_labels = torch.tensor([random.randint(0, 3) for _ in range(labels.size(0))]).cuda()
-
             outputs = model(inputs)
             # Calculate the rotation prediction loss
-            rotation_loss = criterion(outputs, rotation_labels)
+            rotation_loss = criterion(outputs, labels)
 
             optimizer.zero_grad()
             rotation_loss.backward()
