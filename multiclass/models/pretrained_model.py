@@ -2,7 +2,7 @@ import torch
 import torchvision
 import torchvision.transforms as transforms
 
-def train_pretrained(train_dataset, test_dataset):
+def train_pretrained():
 
     model = torchvision.models.resnet18(pretrained=False)
 
