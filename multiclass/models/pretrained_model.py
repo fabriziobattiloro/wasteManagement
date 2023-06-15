@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
 from torchvision.models import resnet18
+import torchvision
 
 def train_rotation_model():
     # Define the self-supervised rotation model
