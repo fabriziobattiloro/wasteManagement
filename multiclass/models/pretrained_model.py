@@ -13,17 +13,17 @@ def train_pretrained(train_loader, test_loader):
     # Train the model
     for epoch in range(10):
         for i, data in enumerate(train_loader, 0):
-        inputs, labels = data
-        inputs = Variable(inputs).cuda()
-        labels = Variable(labels).cuda()
+            inputs, labels = data
+            inputs = Variable(inputs).cuda()
+            labels = Variable(labels).cuda()
 
-        outputs = model(inputs)
-        # Resize the labels tensor to match the output tensor dimensions
+            outputs = model(inputs)
+            # Resize the labels tensor to match the output tensor dimensions
 
-        loss = criterion(outputs, labels)
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+            loss = criterion(outputs, labels)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
 
     # Evaluate the model
     correct = 0
