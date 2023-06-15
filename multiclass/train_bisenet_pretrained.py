@@ -18,6 +18,7 @@ from models.loading_data import loading_data, loading_rotated_data
 from models.utils import *
 from models.timer import Timer
 from models.loss import MixSoftmaxCrossEntropyLoss
+from models.pretrained_model import train_pretrained
 import pdb
 
 exp_name = cfg.TRAIN.EXP_NAME
@@ -39,6 +40,8 @@ def main():
         torch.cuda.set_device(cfg.TRAIN.GPU_ID[0])
     torch.backends.cudnn.benchmark = True
 
+    train_pretrained()
+
     net = []  
     net = BiSeNet(cfg.DATA.NUM_CLASSES) 
 
@@ -59,8 +62,7 @@ def main():
     scheduler = StepLR(optimizer, step_size=cfg.TRAIN.NUM_EPOCH_LR_DECAY, gamma=cfg.TRAIN.LR_DECAY)
     _t = {'train time' : Timer(),'val time' : Timer()} 
     validate(val_loader, net, criterion, optimizer, -1, restore_transform)
-    for epoch in range(cfg.TRAIN.MAX_EPOCH_PRETRAINED):
-        self_supervised_pretrain(train_loader_rotated, net, criterion_pretrained, optimizer, epoch)
+    
     for epoch in range(cfg.TRAIN.MAX_EPOCH):
         _t['train time'].tic()
         train(train_loader, net, criterion, optimizer, epoch)

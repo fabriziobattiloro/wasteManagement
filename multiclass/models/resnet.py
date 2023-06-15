@@ -158,9 +158,11 @@ class ResNet(nn.Module):
         return x
 
 
-def resnet18(**kwargs):
+def resnet18(pretrained, **kwargs):
    
     model = ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
+    if pretrained:
+        model.load_state_dict(torch.load('./model.pth'))
     return model
 
 

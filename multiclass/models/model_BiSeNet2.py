@@ -9,7 +9,7 @@ from models.basic import _ConvBNReLU
 
 
 class BiSeNet(nn.Module):
-    def __init__(self, nclass, backbone, aux=False, jpu=False, pretrained_base=False, **kwargs):
+    def __init__(self, nclass, backbone, aux=False, jpu=False, pretrained_base=True, **kwargs):
         super(BiSeNet, self).__init__()
         self.aux = aux
         self.spatial_path = SpatialPath(3, 128, **kwargs)
@@ -113,11 +113,11 @@ class AttentionRefinmentModule(nn.Module):
 
 
 class ContextPath(nn.Module):
-    def __init__(self, backbone, pretrained_base=False, norm_layer=nn.BatchNorm2d, **kwargs):
+    def __init__(self, backbone, pretrained_base=True, norm_layer=nn.BatchNorm2d, **kwargs):
         super(ContextPath, self).__init__()
         input_channels = 512
         if backbone == 'resnet18':
-            pretrained = resnet18(**kwargs)
+            pretrained = resnet18(pretrained, **kwargs)
         elif backbone == 'resnet34':
             pretrained = resnet34(**kwargs)
         elif backbone == 'resnet50':
