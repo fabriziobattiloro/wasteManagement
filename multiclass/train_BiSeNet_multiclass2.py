@@ -39,7 +39,7 @@ def main():
     torch.backends.cudnn.benchmark = True
 
     net = []  
-    net = BiSeNet(cfg.DATA.NUM_CLASSES, 'resnet101') 
+    net = BiSeNet(cfg.DATA.NUM_CLASSES, 'resnet18') 
 
     if len(cfg.TRAIN.GPU_ID)>1:
         net = torch.nn.DataParallel(net, device_ids=cfg.TRAIN.GPU_ID).cuda()
@@ -72,16 +72,11 @@ def train(train_loader, net, criterion, optimizer, epoch):
         labels = Variable(labels).cuda()
 
         outputs = net(inputs)
-        out1, out2, out3= outputs
         # Resize the labels tensor to match the output tensor dimensions
 
-        loss1 = criterion(out1, labels)
-        loss2 = criterion(out2, labels)
-        loss3 = criterion(out3, labels)
-
-        losses = loss1 + loss2 + loss3
+        loss = criterion(outputs, labels)
         optimizer.zero_grad()
-        losses.backward()
+        loss.backward()
         optimizer.step()
 
 
@@ -106,10 +101,9 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
         inputs = Variable(inputs, volatile=True).cuda()
         labels = Variable(labels, volatile=True).cuda()
         outputs = net(inputs)
-        out1, out2, out3 = outputs
         
         # For each pixel, determine the class with highest probability
-        max_value, predicted = torch.max(out1.data, 1)  
+        max_value, predicted = torch.max(outputs.data, 1)  
         
         input_batches.append(inputs)
         output_batches.append(predicted)
