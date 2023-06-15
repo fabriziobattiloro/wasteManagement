@@ -18,7 +18,7 @@ from models.loading_data import loading_data, loading_rotated_data
 from models.utils import *
 from models.timer import Timer
 from models.loss import MixSoftmaxCrossEntropyLoss
-from models.pretrained_model import train_pretrained
+from models.pretrained_model import train_rotation_model
 import pdb
 
 exp_name = cfg.TRAIN.EXP_NAME
@@ -38,7 +38,7 @@ def main():
         torch.cuda.set_device(cfg.TRAIN.GPU_ID[0])
     torch.backends.cudnn.benchmark = True
 
-    train_pretrained()
+    train_rotation_model()
 
     net = []  
     net = BiSeNet(cfg.DATA.NUM_CLASSES) 
