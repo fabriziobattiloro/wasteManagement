@@ -15,7 +15,7 @@ def train_pretrained(train_loader, test_loader):
         for i, (images, labels) in enumerate(train_loader):
             # Forward pass
             outputs = model(images)
-            loss = criterion(outputs, labels)
+            loss = criterion(outputs, labels.unsqueeze(1).float())
 
             # Backward pass
             optimizer.zero_grad()
