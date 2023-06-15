@@ -14,11 +14,19 @@ def train_rotation_model():
         def forward(self, x):
             return self.resnet(x)
 
+    import torchvision.transforms as transforms
+
     # Create the self-supervised pre-training dataset with rotations
     transform = transforms.Compose([
-        transforms.RandomRotation(degrees=[0, 90, 180, 270]),
+        transforms.RandomChoice([
+            transforms.RandomRotation(degrees=0),
+            transforms.RandomRotation(degrees=90),
+            transforms.RandomRotation(degrees=180),
+            transforms.RandomRotation(degrees=270)
+        ]),
         transforms.ToTensor()
     ])
+
     dataset = torchvision.datasets.ImageFolder("/kaggle/input/resortit/dataset/train", transform=transform)
 
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=True)
