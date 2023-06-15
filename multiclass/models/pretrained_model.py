@@ -6,11 +6,12 @@ from models.config import cfg
 from torch import optim
 import torch.nn.functional as F
 import random
+from models.resnet import resnet18
 
 
 def train_pretrained(train_loader, test_loader):
 
-    model = torchvision.models.resnet18(pretrained=False)
+    model = resnet18(False)
     if len(cfg.TRAIN.GPU_ID) > 1:
         model = torch.nn.DataParallel(model, device_ids=cfg.TRAIN.GPU_ID).cuda()
     else:
