@@ -29,11 +29,8 @@ def train_rotation_model():
         transforms.ToTensor()
     ])
 
-    temp_dir = "/kaggle/input/resortit/dataset"
-    class_folder = os.path.join(temp_dir, "train")
-    os.makedirs(class_folder, exist_ok=True)
 
-    dataset = torchvision.datasets.ImageFolder("/kaggle/input/resortit/dataset/train", transform=transform)
+    dataset = torchvision.datasets.ImageFolder("/kaggle/input/resortit/dataset", transform=transform)
 
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=True)
 
