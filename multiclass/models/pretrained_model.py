@@ -7,6 +7,8 @@ from torch import optim
 import torch.nn.functional as F
 import random
 from models.resnet import resnet18
+import torch.utils.data as data
+import torchvision.transforms as transforms
 
 
 def train_pretrained():
