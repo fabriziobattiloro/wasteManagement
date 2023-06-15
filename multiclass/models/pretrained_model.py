@@ -2,11 +2,16 @@ import torch
 import torchvision
 import torchvision.transforms as transforms
 from torch.autograd import Variable
+from models.config import cfg
 
 def train_pretrained(train_loader, test_loader):
 
     model = torchvision.models.resnet18(pretrained=False)
-    model.cuda()
+    if len(cfg.TRAIN.GPU_ID)>1:
+        model = torch.nn.DataParallel(model, device_ids=cfg.TRAIN.GPU_ID).cuda()
+    else:
+        model=model.cuda()
+    
 
     # Define the loss function and the optimizer
     criterion = torch.nn.CrossEntropyLoss().cuda()
