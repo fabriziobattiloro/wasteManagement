@@ -3,6 +3,8 @@ import torchvision
 import torchvision.transforms as transforms
 from torch.autograd import Variable
 from models.config import cfg
+from torch import optim
+
 
 def train_pretrained(train_loader, test_loader):
 
@@ -14,8 +16,9 @@ def train_pretrained(train_loader, test_loader):
     
 
     # Define the loss function and the optimizer
-    criterion = torch.nn.CrossEntropyLoss().cuda()
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+    criterion = torch.nn.CrossEntropyLoss()
+    criterion.cuda()
+    optimizer = optim.Adam(model.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
 
     # Train the model
     for epoch in range(10):
@@ -27,7 +30,7 @@ def train_pretrained(train_loader, test_loader):
             outputs = model(inputs)
             # Resize the labels tensor to match the output tensor dimensions
 
-            loss = criterion(outputs, labels)
+            loss = criterion(outputs,  labels.view(-1))
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
