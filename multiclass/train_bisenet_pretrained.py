@@ -14,7 +14,7 @@ import torch.nn.functional as F
 
 from models.model_BiSeNet2 import BiSeNet
 from models.config import cfg, __C
-from models.loading_data import loading_data, loading_rotated_data
+from models.loading_data import loading_data
 from models.utils import *
 from models.timer import Timer
 from models.loss import MixSoftmaxCrossEntropyLoss
