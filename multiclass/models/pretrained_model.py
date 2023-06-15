@@ -5,21 +5,19 @@ from torch.autograd import Variable
 from models.config import cfg
 from torch import optim
 import torch.nn.functional as F
-
+import random
 
 
 def train_pretrained(train_loader, test_loader):
 
     model = torchvision.models.resnet18(pretrained=False)
-    if len(cfg.TRAIN.GPU_ID)>1:
+    if len(cfg.TRAIN.GPU_ID) > 1:
         model = torch.nn.DataParallel(model, device_ids=cfg.TRAIN.GPU_ID).cuda()
     else:
-        model=model.cuda()
-    
+        model = model.cuda()
 
     # Define the loss function and the optimizer
     criterion = torch.nn.CrossEntropyLoss()
-    criterion.cuda()
     optimizer = optim.Adam(model.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
 
     # Train the model
@@ -29,12 +27,15 @@ def train_pretrained(train_loader, test_loader):
             inputs = Variable(inputs).cuda()
             labels = Variable(labels).cuda()
 
-            outputs = model(inputs)
-            # Resize the labels tensor to match the output tensor dimensions
+            # Generate random rotation labels (0, 1, 2, 3)
+            rotation_labels = torch.tensor([random.randint(0, 3) for _ in range(labels.size(0))]).cuda()
 
-            loss = criterion(outputs, labels)
+            outputs = model(inputs)
+            # Calculate the rotation prediction loss
+            rotation_loss = criterion(outputs, rotation_labels)
+
             optimizer.zero_grad()
-            loss.backward()
+            rotation_loss.backward()
             optimizer.step()
 
     # Evaluate the model
@@ -46,7 +47,7 @@ def train_pretrained(train_loader, test_loader):
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
 
-    print('Epoch: {} Accuracy: {}%'.format(epoch + 1, 100 * correct / total))
+    print('Accuracy: {}%'.format(100 * correct / total))
 
     # Save the model
     torch.save(model.state_dict(), './model.pth')
