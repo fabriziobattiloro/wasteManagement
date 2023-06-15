@@ -101,6 +101,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
         inputs = Variable(inputs, volatile=True).cuda()
         labels = Variable(labels, volatile=True).cuda()
         outputs = net(inputs)
+        outputs = outputs[0]
         
         # For each pixel, determine the class with highest probability
         max_value, predicted = torch.max(outputs.data, 1)  
