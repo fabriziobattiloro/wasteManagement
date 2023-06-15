@@ -154,11 +154,16 @@ def load_object_labels(label_path):
     return labels
 
 
-def load_object_rotations(rotation_path):
-    with open(rotation_path, 'r') as file:
-        rotations = file.readlines()
-    rotations = [float(rotation.strip()) for rotation in rotations]
-    return rotations
+def load_object_labels(label_path):
+    with open(label_path, 'r') as file:
+        labels = file.readlines()
+    try:
+        labels = [int(label.strip()) for label in labels]
+    except ValueError:
+        # If an error occurs during parsing, assign a default label value
+        labels = [0] * len(labels)
+    return labels
+
 
 
 def loading_rotated_data():
