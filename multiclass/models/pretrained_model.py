@@ -148,7 +148,7 @@ class RotatedResortit(data.Dataset):
 
 
 def load_object_labels(label_path):
-    with open(label_path, 'r') as file:
+    with open(label_path, 'r', encoding='latin-1') as file:
         labels = file.readlines()
     labels = [int(label.strip()) for label in labels]
     return labels
