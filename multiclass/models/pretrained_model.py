@@ -7,20 +7,23 @@ def train_pretrained(train_loader, test_loader):
     model = torchvision.models.resnet18(pretrained=False)
 
     # Define the loss function and the optimizer
-    criterion = torch.nn.CrossEntropyLoss()
+    criterion = torch.nn.CrossEntropyLoss().cuda()
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
     # Train the model
     for epoch in range(10):
-        for i, (images, labels) in enumerate(train_loader):
-            # Forward pass
-            outputs = model(images)
-            loss = criterion(outputs, labels.unsqueeze(1).float())
+        for i, data in enumerate(train_loader, 0):
+        inputs, labels = data
+        inputs = Variable(inputs).cuda()
+        labels = Variable(labels).cuda()
 
-            # Backward pass
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+        outputs = model(inputs)
+        # Resize the labels tensor to match the output tensor dimensions
+
+        loss = criterion(outputs[0], labels)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
     # Evaluate the model
     correct = 0
