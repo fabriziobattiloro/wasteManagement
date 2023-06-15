@@ -27,8 +27,6 @@ writer = SummaryWriter(cfg.TRAIN.EXP_PATH+ '/' + exp_name)
 
 pil_to_tensor = standard_transforms.ToTensor()
 train_loader, val_loader, restore_transform = loading_data()
-train_loader_rotated, val_loader_rotated, restore_transform_rotated = loading_rotated_data()
-
 def main():
 
     cfg_file = open('/kaggle/working/project-code1/multiclass/models/config.py',"r")  
