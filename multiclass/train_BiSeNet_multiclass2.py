@@ -74,7 +74,7 @@ def train(train_loader, net, criterion, optimizer, epoch):
         outputs = net(inputs)
         # Resize the labels tensor to match the output tensor dimensions
 
-        loss = criterion(outputs, labels)
+        loss = criterion(outputs[0], labels)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
