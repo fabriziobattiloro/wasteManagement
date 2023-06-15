@@ -35,6 +35,7 @@ def train_pretrained(train_loader, test_loader):
             optimizer.zero_grad()
             rotation_loss.backward()
             optimizer.step()
+            print('finish')
 
     # Evaluate the model
     correct = 0
