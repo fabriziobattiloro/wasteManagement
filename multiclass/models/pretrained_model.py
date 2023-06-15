@@ -30,7 +30,7 @@ def train_pretrained(train_loader, test_loader):
             outputs = model(inputs)
             # Resize the labels tensor to match the output tensor dimensions
 
-            loss = criterion(outputs,  labels.view(-1))
+            loss = criterion(outputs, labels)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
