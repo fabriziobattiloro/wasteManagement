@@ -228,5 +228,55 @@ def reduce_loss_dict(loss_dict):
         reduced_losses = {k: v for k, v in zip(loss_names, all_losses)}
     return reduced_losses
 
+def calculate_class_pixel_counts(dataset):
+    class_counts = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0}
+
+    # Step 2
+    for image in dataset:
+        ground_truth_label = image.get_ground_truth_label()
+        pixel_counts = np.bincount(image.pixels.flatten())  # Assuming image.pixels contains the class labels for each pixel
+
+        for class_label, count in enumerate(pixel_counts):
+            class_counts[class_label] += count
+
+    return [class_counts[label] for label in range(5)]  # Return the pixel counts in the specified order [0, 1, 2, 3, 4]
+
+
+
+import torch
+import torchvision.transforms.functional as F
+
+# Define the rotation angles for augmentation
+rotation_angles = [0, 90, 180, 270]
+
+import torch
+from torchvision import transforms
+import random
+
+def generate_rotated_train_loader(train_loader):
+    # Define rotation angles
+    rotation_angles = [30, 90, 180, 360]
+
+    # Function to randomly rotate images
+    def rotate(image):
+        angle = random.choice(rotation_angles)
+        return transforms.functional.rotate(image, angle)
+
+    # Apply rotation to train_loader
+    transformed_train_loader = []
+    for images, labels in train_loader:
+        rotated_images = torch.stack([rotate(image) for image in images])
+        transformed_train_loader.append((rotated_images, labels))
+
+    # Create rotated train loader
+    rotated_train_loader = torch.utils.data.DataLoader(
+        transformed_train_loader,
+        batch_size=train_loader.batch_size,
+        num_workers=train_loader.num_workers,
+        collate_fn=train_loader.collate_fn
+    )
+
+    return rotated_train_loader
+
 
 
