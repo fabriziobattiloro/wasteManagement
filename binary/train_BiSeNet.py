@@ -64,21 +64,15 @@ def main():
 
 def train(train_loader, net, criterion, optimizer, epoch):
     for i, data in enumerate(train_loader, 0):
-        inputs, labels = data
+       inputs, labels = data
         inputs = Variable(inputs).cuda()
         labels = Variable(labels).cuda()
 
         outputs = net(inputs)
-        out1, out2, out3= outputs
-        # Resize the labels tensor to match the output tensor dimensions
-
-        loss1 = criterion(out1, labels.unsqueeze(1).float())
-        loss2 = criterion(out2, labels.unsqueeze(1).float())
-        loss3 = criterion(out3, labels.unsqueeze(1).float())
-
-        losses = loss1 + loss2 + loss3
+        loss = criterion(outputs[0], labels)
         optimizer.zero_grad()
-        losses.backward()
+        loss.backward()
+
         optimizer.step()
 
 
