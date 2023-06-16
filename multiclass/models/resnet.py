@@ -179,7 +179,7 @@ def resnet50(pretrained=False, **kwargs):
     """
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
     if pretrained:
-        state_dict = torch.load('pretrained_resnet.pth')
+        state_dict = torch.load('/kaggle/working/project-code1/multiclass/models/pretrained_resnet.pth')
         model.load_state_dict(state_dict)
     return model
 
