@@ -48,8 +48,10 @@ def main():
 
     net.train()
     criterion = torch.nn.CrossEntropyLoss()
+    #criterion = FocalLoss()
     criterion.cuda()
 
+   
     optimizer = optim.Adam(net.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
     scheduler = StepLR(optimizer, step_size=cfg.TRAIN.NUM_EPOCH_LR_DECAY, gamma=cfg.TRAIN.LR_DECAY)
     _t = {'train time' : Timer(),'val time' : Timer()} 
@@ -104,7 +106,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
         outputs = outputs[0]
         
         # For each pixel, determine the class with highest probability
-        max_value, predicted = torch.max(outputs.data, 1)  
+        max_value, predicted = torch.max(out1.data, 1)  
         
         input_batches.append(inputs)
         output_batches.append(predicted)
@@ -139,10 +141,4 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
 

@@ -64,6 +64,21 @@ class RandomHorizontallyFlip(object):
         return img, mask
 
 
+class RandomVerticallyFlip(object):
+    def __call__(self, img, mask):        
+        if random.random() < 0.5:
+            return img.transpose(Image.FLIP_TOP_BOTTOM), mask.transpose(Image.FLIP_TOP_BOTTOM)
+        return img, mask
+
+
+class RandomRotation(object):    
+    def __init__(self, degrees):
+        self.degrees = degrees
+    def __call__(self, img, mask):        
+        angle = random.uniform(-self.degrees, self.degrees)
+        return img.rotate(angle, resample=Image.BILINEAR), mask.rotate(angle, resample=Image.NEAREST)
+
+
 class FreeScale(object):
     def __init__(self, size, interpolation=Image.NEAREST):
         self.size = size  # (h, w)
@@ -129,3 +144,5 @@ class ChangeLabel(object):
     def __call__(self, mask):
         mask[mask == self.ori_label] = self.new_label
         return mask
+
+

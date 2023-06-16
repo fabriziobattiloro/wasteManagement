@@ -12,11 +12,11 @@ import torchvision.transforms as standard_transforms
 import torchvision.utils as vutils
 from tensorboardX import SummaryWriter
 
-from model import ENet
-from config import cfg
-from loading_data import loading_data
-from utils import *
-from timer import Timer
+from models.model import ENet
+from models.config import cfg
+from models.loading_data import loading_data
+from models.utils import *
+from models.timer import Timer
 import pdb
 
 exp_name = cfg.TRAIN.EXP_NAME
@@ -28,7 +28,7 @@ train_loader, val_loader, restore_transform = loading_data()
 
 def main():
 
-    cfg_file = open('/content/drive/MyDrive/project-WasteSemSeg-main/program/config.py',"r")  
+    cfg_file = open('/kaggle/working/project-code1/multiclass/models/config.py',"r")  
     cfg_lines = cfg_file.readlines()
     
     with open(log_txt, 'a') as f:
@@ -57,6 +57,7 @@ def main():
 
     net.train()
     criterion = criterion = torch.nn.CrossEntropyLoss().cuda() #loss multiclassification
+    #criterion = FocalLoss()
 
     optimizer = optim.Adam(net.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
     scheduler = StepLR(optimizer, step_size=cfg.TRAIN.NUM_EPOCH_LR_DECAY, gamma=cfg.TRAIN.LR_DECAY)
@@ -125,6 +126,11 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
     print(f"Class 3: {mean_classe3 / len(val_loader):.4f}")
     print(f"Class 4: {mean_classe4 / len(val_loader):.4f}")
     print(f"Class tot: {mean_tot / len(val_loader):.4f}")
+
+    model_size = compute_model_size(net)
+    print('Model size %.4f' % (model_size))
+    net.train()
+    criterion.cuda()
 
 
 if __name__ == '__main__':
