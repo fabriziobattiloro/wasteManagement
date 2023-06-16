@@ -1,6 +1,7 @@
 import torch.nn as nn
 import torch.utils.model_zoo as model_zoo
 from models.config import cfg
+import torch
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
            'resnet152']
@@ -176,7 +177,7 @@ def resnet50(pretrained, **kwargs):
     
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
     if pretrained:
-        model = torch.load('/kaggle/kaggle_project/multiclass/models/pretrained_resnet.pth')
+        model = torch.load('/kaggle/working/project-code1/multiclass/models/pretrained_resnet.pth')
     return model
 
 
