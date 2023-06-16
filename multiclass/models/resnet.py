@@ -1,9 +1,8 @@
 import torch.nn as nn
 import torch.utils.model_zoo as model_zoo
 from models.config import cfg
+from collections import OrderedDict
 import torch
-from torch.nn import init
-
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
            'resnet152']
@@ -174,24 +173,29 @@ def resnet34(**kwargs):
     model = ResNet(BasicBlock, [3, 4, 6, 3], **kwargs)
     return model
 
-def resnet50(pretrained, **kwargs):
+def resnet50(pretrained=False, **kwargs):
     """Constructs a ResNet-50 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
+    
     if pretrained:
         state_dict = torch.load('/kaggle/working/project-code1/multiclass/models/pretrained_resnet.pth')
-        print(state_dict)
-        model.load_state_dict(state_dict, strict=False)
-    
-        # Add a class to the model at the index 0
-        model.classifier[0] = nn.Linear(2048, 1000)
-    
-        # Slice the model of one position
-        model = model[:-1]
+        # Add null class at index 0
+        num_classes = model.fc.out_features
+        updated_state_dict = OrderedDict()
+        for key, value in state_dict.items():
+            if key == 'fc.weight':
+                updated_state_dict[key] = torch.randn(num_classes, value.shape[1])
+            elif key == 'fc.bias':
+                updated_state_dict[key] = torch.randn(num_classes)
+            else:
+                updated_state_dict[key] = value
+        model.load_state_dict(updated_state_dict)
     
     return model
+
 
 
 def resnet101(**kwargs):
