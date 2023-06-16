@@ -50,6 +50,7 @@ def main():
     net.train()
     awl = AutomaticWeightedLoss(3)
     criterion = torch.nn.CrossEntropyLoss()
+    #criterion = FocalLoss() #focal loss function
     criterion.cuda()
 
     optimizer = optim.Adam(net.parameters(), lr=cfg.TRAIN.LR, weight_decay=cfg.TRAIN.WEIGHT_DECAY)
