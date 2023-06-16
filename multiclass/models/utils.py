@@ -9,6 +9,7 @@ import torch.cuda.amp as amp
 import torch
 from thop import profile, clever_format
 import torch.distributed as dist
+import time
 
 def weights_init_kaiming(m):
     if isinstance(m, nn.Conv2d):
@@ -47,14 +48,6 @@ class CrossEntropyLoss2d(nn.Module):
 
     def forward(self, inputs, targets):
         return self.nll_loss(F.log_softmax(inputs, dim=-1), targets)
-#CustomLoss
-class CustomLoss(nn.Module):
-    def __init__(self, weight=None, size_average=True):
-        super(CustomLoss, self).__init__()
-        self.nll_loss = nn.NLLLoss(weight, size_average)
-
-    def forward(self, inputs, targets):
-        return self.nll_loss(F.log_softmax(inputs, dim=1), targets)
 
 #Focal loss
 
@@ -279,4 +272,70 @@ def generate_rotated_train_loader(train_loader):
     return rotated_train_loader
 
 
+class AutomaticWeightedLoss(nn.Module):
+    """automatically weighted multi-task loss
+
+    Params：
+        num: int，the number of loss
+        x: multi-task loss
+    Examples：
+        loss1=1
+        loss2=2
+        awl = AutomaticWeightedLoss(2)
+        loss_sum = awl(loss1, loss2)
+    """
+    def __init__(self, num=2):
+        super(AutomaticWeightedLoss, self).__init__()
+        params = torch.ones(num, requires_grad=True)
+        self.params = torch.nn.Parameter(params)
+    def forward(self, *x):
+        loss_sum = 0
+        for i, loss in enumerate(x):
+            loss_sum += 0.5 / (self.params[i] ** 2) * loss + torch.log(1 + self.params[i] ** 2)
+        return loss_sum
+
+if __name__ == '__main__':
+    awl = AutomaticWeightedLoss(2)
+    print(awl.parameters())
+
+##load model xception39
+
+def load_model(model, model_file, is_restore=False):
+    t_start = time.time()
+    if isinstance(model_file, str):
+        state_dict = torch.load(model_file, map_location=torch.device('cpu'))
+        if 'model' in state_dict.keys():
+            state_dict = state_dict['model']
+    else:
+        state_dict = model_file
+    t_ioend = time.time()
+
+    if is_restore:
+        new_state_dict = OrderedDict()
+        for k, v in state_dict.items():
+            name = 'module.' + k
+            new_state_dict[name] = v
+        state_dict = new_state_dict
+
+    model.load_state_dict(state_dict, strict=False)
+    ckpt_keys = set(state_dict.keys())
+    own_keys = set(model.state_dict().keys())
+    missing_keys = own_keys - ckpt_keys
+    unexpected_keys = ckpt_keys - own_keys
+
+    if len(missing_keys) > 0:
+        logger.warning('Missing key(s) in state_dict: {}'.format(
+            ', '.join('{}'.format(k) for k in missing_keys)))
+
+    if len(unexpected_keys) > 0:
+        logger.warning('Unexpected key(s) in state_dict: {}'.format(
+            ', '.join('{}'.format(k) for k in unexpected_keys)))
+
+    del state_dict
+    t_end = time.time()
+    logger.info(
+        "Load model, Time usage:\n\tIO: {}, initialize parameters: {}".format(
+            t_ioend - t_start, t_end - t_ioend))
+
+    return model
 

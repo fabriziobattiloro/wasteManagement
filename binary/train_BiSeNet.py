@@ -11,7 +11,7 @@ import torchvision.transforms as standard_transforms
 import torchvision.utils as vutils
 from tensorboardX import SummaryWriter
 
-from models.model_BiSeNet2 import BiSeNetV2
+from models.model_BiSeNet2 import BiSeNet
 from models.config import cfg, __C
 from models.loading_data import loading_data
 from models.utils import *
@@ -27,7 +27,7 @@ train_loader, val_loader, restore_transform = loading_data()
 
 def main():
 
-    cfg_file = open('/content/drive/MyDrive/project-WasteSemSeg-main_3/binary/models/config.py',"r")  
+    cfg_file = open('/kaggle/working/project-code1/binary/models/config.py',"r")  
     cfg_lines = cfg_file.readlines()
     
     with open(log_txt, 'a') as f:
@@ -37,7 +37,7 @@ def main():
     torch.backends.cudnn.benchmark = True
 
     net = []   
-    net = BiSeNetV2( cfg.DATA.NUM_CLASSES)
+    net = BiSeNet( cfg.DATA.NUM_CLASSES)
     
 
     if len(cfg.TRAIN.GPU_ID)>1:
@@ -67,19 +67,20 @@ def train(train_loader, net, criterion, optimizer, epoch):
         inputs, labels = data
         inputs = Variable(inputs).cuda()
         labels = Variable(labels).cuda()
-        
-        outputs = net(inputs)
-        out_aux, out_aux2, out_aux3, out_aux4, out_aux5= outputs
-        loss1 = criterion(out_aux, labels.unsqueeze(1).float())
-        loss2 = criterion(out_aux2, labels.unsqueeze(1).float())
-        loss3 = criterion(out_aux3, labels.unsqueeze(1).float())
-        loss4 = criterion(out_aux4, labels.unsqueeze(1).float())
-        loss5 = criterion(out_aux5, labels.unsqueeze(1).float())
-        loss=loss1+loss2+loss3+loss4+loss5
 
+        outputs = net(inputs)
+        out1, out2, out3= outputs
+        # Resize the labels tensor to match the output tensor dimensions
+
+        loss1 = criterion(out1, labels.unsqueeze(1).float())
+        loss2 = criterion(out2, labels.unsqueeze(1).float())
+        loss3 = criterion(out3, labels.unsqueeze(1).float())
+
+        losses = loss1 + loss2 + loss3
         optimizer.zero_grad()
-        loss.backward()
+        losses.backward()
         optimizer.step()
+
 
 
 def validate(val_loader, net, criterion, optimizer, epoch, restore):
@@ -96,7 +97,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
         outputs = net(inputs)
         #for binary classification
         
-        out_aux, out_aux2, out_aux3, out_aux4, out_aux5= outputs
+        out_aux, out_aux2, out_aux3= outputs
         out_aux[out_aux > 0.5] = 1
         out_aux[out_aux <= 0.5] = 0
         #for multi-classification ???

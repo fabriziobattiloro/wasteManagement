@@ -16,6 +16,7 @@ from models.model_BiSeNet2 import BiSeNet
 from models.config import cfg, __C
 from models.loading_data import loading_data
 from models.utils import *
+from models.utils import AutomaticWeightedLoss
 from models.timer import Timer
 from models.loss import MixSoftmaxCrossEntropyLoss
 import pdb
@@ -47,6 +48,7 @@ def main():
         net=net.cuda()
 
     net.train()
+    awl = AutomaticWeightedLoss(3)
     criterion = torch.nn.CrossEntropyLoss()
     criterion.cuda()
 
@@ -56,7 +58,7 @@ def main():
     validate(val_loader, net, criterion, optimizer, -1, restore_transform)
     for epoch in range(cfg.TRAIN.MAX_EPOCH):
         _t['train time'].tic()
-        train(train_loader, net, criterion, optimizer, epoch)
+        train(train_loader, net, criterion, optimizer, epoch, awl)
         _t['train time'].toc(average=False)
         print('training time of one epoch: {:.2f}s'.format(_t['train time'].diff))
         _t['val time'].tic()
@@ -65,7 +67,7 @@ def main():
         print('val time of one epoch: {:.2f}s'.format(_t['val time'].diff))
 
 
-def train(train_loader, net, criterion, optimizer, epoch):
+def train(train_loader, net, criterion, optimizer, epoch, awl):
     for i, data in enumerate(train_loader, 0):
         inputs, labels = data
         inputs = Variable(inputs).cuda()
@@ -77,6 +79,7 @@ def train(train_loader, net, criterion, optimizer, epoch):
         loss = criterion(outputs[0], labels)
         optimizer.zero_grad()
         loss.backward()
+
         optimizer.step()
 
 

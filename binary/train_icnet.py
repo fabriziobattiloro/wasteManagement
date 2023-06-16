@@ -28,7 +28,7 @@ train_loader, val_loader, restore_transform = loading_data()
 
 def main():
 
-    cfg_file = open('/content/drive/MyDrive/project-WasteSemSeg-main_3/binary/models/config.py',"r")  
+    cfg_file = open('/kaggle/working/project-code1/binary/models/config.py',"r")  
     cfg_lines = cfg_file.readlines()
     
     with open(log_txt, 'a') as f:
@@ -71,11 +71,16 @@ def train(train_loader, net, criterion, optimizer, epoch):
         outputs = net(inputs)
         out0, out1, out2, out3 = outputs
 
-        loss = criterion(out0, labels.unsqueeze(1).float())
+        loss0 = criterion(out0, labels.unsqueeze(1).float())
+        #loss1 = criterion(out1, labels.unsqueeze(1).float())
+        #loss2 = criterion(out2, labels.unsqueeze(1).float())
+        #loss3 = criterion(out3, labels.unsqueeze(1).float())
+        
+        #loss= loss0+loss1+loss2+loss3
 
         # reduce losses over all GPUs for logging purposes
         optimizer.zero_grad()
-        loss.backward()
+        loss0.backward()
         optimizer.step()
 
 def validate(val_loader, net, criterion, optimizer, epoch, restore):
