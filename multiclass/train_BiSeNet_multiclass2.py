@@ -77,15 +77,16 @@ def train(train_loader, net, criterion, optimizer, epoch, awl):
         outputs = net(inputs)
         # Resize the labels tensor to match the output tensor dimensions
         
-        loss = criterion(outputs[0], labels)
         #to implement weighted loss
+        #loss = criterion(outputs[0], labels)
         #loss1 = criterion(outputs[0], labels) 
         #loss2 = criterion(outputs[0], labels)
         #optimizer.zero_grad()
-        #loss_awl = awl(loss1, loss2, loss0)
+        #loss_awl = awl(loss0, loss1, loss2)
         #loss_awl.backward()
 
         #to implement cross-entropy loss
+        loss = criterion(outputs[0], labels)
         optimizer.zero_grad()
         loss.backward()
 
