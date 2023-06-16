@@ -178,13 +178,21 @@ def resnet50(pretrained=False, **kwargs):
     """Constructs a ResNet-50 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
+        num_classes (int): Number of classes including the null class
     """
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
     if pretrained:
         state_dict = torch.load('/kaggle/working/project-code1/multiclass/models/pretrained_resnet.pth')
-    
+        
+        # Adjust the number of classes in the loaded state dictionary
+        state_dict['fc.weight'] = torch.cat(
+            [state_dict['fc.weight'], torch.zeros(1, state_dict['fc.weight'].shape[1])], dim=0)
+        state_dict['fc.bias'] = torch.cat(
+            [state_dict['fc.bias'], torch.zeros(1)], dim=0)
+        
         model.load_state_dict(state_dict, strict=False)
     return model
+
 
 
 def resnet101(**kwargs):
