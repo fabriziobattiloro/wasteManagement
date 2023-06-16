@@ -172,11 +172,15 @@ def resnet34(**kwargs):
     model = ResNet(BasicBlock, [3, 4, 6, 3], **kwargs)
     return model
 
-def resnet50(pretrained_base=True, **kwargs):
+def resnet50(pretrained=False, **kwargs):
+    """Constructs a ResNet-50 model.
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
-    if pretrained_base:
-        state_dict = torch.hub.load('/kaggle/working/project-code1/multiclass/models/pretrained_resnet.pth')
-        model.load_state_dict(state_dict['state_dict'])
+    if pretrained:
+        state_dict = torch.load('pretrained_resnet.pth')
+        model.load_state_dict(state_dict)
     return model
 
 
