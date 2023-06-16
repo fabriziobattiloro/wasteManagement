@@ -117,11 +117,11 @@ class ContextPath(nn.Module):
         super(ContextPath, self).__init__()
         input_channels = 512
         if backbone == 'resnet18':
-            pretrained = resnet18(pretrained, **kwargs)
+            pretrained = resnet18(pretrained_base, **kwargs)
         elif backbone == 'resnet34':
             pretrained = resnet34(**kwargs)
         elif backbone == 'resnet50':
-            pretrained = resnet50(pretrained, **kwargs)
+            pretrained = resnet50(pretrained_base, **kwargs)
             input_channels = 2048
         elif backbone == 'resnet101':
             pretrained = resnet101(**kwargs)
