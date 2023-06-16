@@ -99,7 +99,6 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
         #for binary classification
         out0[out0>0.5] = 1
         out0[out0<=0.5] = 0
-        #for multi-classification ???
 
         iou_ += calculate_mean_iu([out0.squeeze_(1).data.cpu().numpy()], [labels.data.cpu().numpy()], 2)
     mean_iu = iou_/len(val_loader) 
