@@ -116,7 +116,6 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
         outputs = net(inputs)
         outputs = outputs[0]
         
-        # For each pixel, determine the class with highest probability
         max_value, predicted = torch.max(outputs.data, 1)  
         
         input_batches.append(inputs)
@@ -142,9 +141,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
   
     model_size = compute_model_size(net)
     print('Model size %.4f' % (model_size))
-    # Calculate average IoU score over all classes
-    #mean_classes[5] =float (iou_ / cfg.DATA.NUM_CLASSES)
-    #print(f"Mean IoU: {mean_iou:.4f}")
+    
 
     net.train()
     criterion.cuda()
