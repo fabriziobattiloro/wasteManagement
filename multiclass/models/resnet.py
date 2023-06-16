@@ -186,9 +186,10 @@ def resnet50(pretrained=False, **kwargs):
         
         # Adjust the number of classes in the loaded state dictionary
         state_dict['fc.weight'] = torch.cat(
-            [state_dict['fc.weight'].cuda(), torch.zeros(1, state_dict['fc.weight'].shape[1]).cuda()], dim=0)
+            [torch.zeros(1, state_dict['fc.weight'].shape[1]).cuda(), state_dict['fc.weight'].cuda()[:-1]], dim=0)
         state_dict['fc.bias'] = torch.cat(
-            [state_dict['fc.bias'].cuda(), torch.zeros(1).cuda()], dim=0)
+            [torch.zeros(1).cuda(), state_dict['fc.bias'].cuda()[:-1]], dim=0)
+
         
         model.load_state_dict(state_dict, strict=False)
     return model
