@@ -100,7 +100,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
         out_aux, out_aux2, out_aux3= outputs
         out_aux[out_aux > 0.5] = 1
         out_aux[out_aux <= 0.5] = 0
-        #for multi-classification ???
+ 
 
         iou_ += calculate_mean_iu([out_aux.squeeze_(1).data.cpu().numpy()], [labels.data.cpu().numpy()], 2)
 
