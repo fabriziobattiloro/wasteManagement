@@ -1,6 +1,6 @@
 """Base Model for Semantic Segmentation"""
 import torch.nn as nn
-from .resnetv1b import resnet50_v1s, resnet101_v1s, resnet152_v1s
+from models.resnetv1b import resnet50_v1s, resnet101_v1s, resnet152_v1s
 
 __all__ = ['SegBaseModel']
 

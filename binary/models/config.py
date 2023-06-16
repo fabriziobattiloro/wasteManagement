@@ -34,7 +34,7 @@ __C.TRAIN.PRETRAINED_ENCODER = '' # Path of the pretrained encoder
 
 # input setting
 
-__C.TRAIN.BATCH_SIZE = 32 #imgs
+__C.TRAIN.BATCH_SIZE = 64 #imgs
 __C.TRAIN.IMG_SIZE = (224,448)
 
 __C.TRAIN.GPU_ID = [0]
@@ -70,7 +70,7 @@ __C.TRAIN.EXP_LOG_PATH = './logs'
 __C.TRAIN.EXP_PATH = './exp'
 
 #------------------------------VAL------------------------
-__C.VAL.BATCH_SIZE = 16 # imgs
+__C.VAL.BATCH_SIZE = 32 # imgs
 __C.VAL.SAMPLE_RATE = 1
 
 #------------------------------TEST------------------------
