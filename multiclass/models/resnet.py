@@ -182,11 +182,7 @@ def resnet50(pretrained=False, **kwargs):
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
     if pretrained:
         state_dict = torch.load('/kaggle/working/project-code1/multiclass/models/pretrained_resnet.pth')
-        
-        # Update parameters for null class
-        state_dict['fc.weight'] = state_dict['fc.weight'].repeat(5, 1)
-        state_dict['fc.bias'] = state_dict['fc.bias'].repeat(5)
-        
+    
         model.load_state_dict(state_dict, strict=False)
     return model
 
