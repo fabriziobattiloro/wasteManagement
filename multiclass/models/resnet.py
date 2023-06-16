@@ -194,7 +194,7 @@ def resnet50(pretrained=False, **kwargs):
                 updated_state_dict[key] = torch.randn(num_classes)
             else:
                 updated_state_dict[key] = value
-        for key in updated_state_dict_state_dict.keys():
+        for key in updated_state_dict.keys():
             print(key)
         model.load_state_dict(updated_state_dict)
     
