@@ -182,7 +182,8 @@ def resnet50(pretrained=False, **kwargs):
     
     if pretrained:
         state_dict = torch.load('/kaggle/working/project-code1/multiclass/models/pretrained_resnet.pth')
-        print(state_dict)
+        for key in state_dict.keys():
+            print(key)
         # Add null class at index 0
         num_classes = model.fc.out_features
         updated_state_dict = OrderedDict()
@@ -193,7 +194,8 @@ def resnet50(pretrained=False, **kwargs):
                 updated_state_dict[key] = torch.randn(num_classes)
             else:
                 updated_state_dict[key] = value
-        print(updated_state_dict)
+        for key in updated_state_dict_state_dict.keys():
+            print(key)
         model.load_state_dict(updated_state_dict)
     
     return model
