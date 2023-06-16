@@ -1,16 +1,12 @@
 import torch.nn as nn
 import torch.utils.model_zoo as model_zoo
+from models.config import cfg
+from collections import OrderedDict
+import torch
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
            'resnet152']
 
-model_urls = {
-    'resnet18': 'https://download.pytorch.org/models/resnet18-5c106cde.pth',
-    'resnet34': 'https://download.pytorch.org/models/resnet34-333f7ec4.pth',
-    'resnet50': 'https://download.pytorch.org/models/resnet50-19c8e357.pth',
-    'resnet101': 'https://download.pytorch.org/models/resnet101-5d3b4d8f.pth',
-    'resnet152': 'https://download.pytorch.org/models/resnet152-b121ed2d.pth',
-}
 
 
 def conv3x3(in_planes, out_planes, stride=1):
@@ -98,7 +94,7 @@ class Bottleneck(nn.Module):
 
 class ResNet(nn.Module):
 
-    def __init__(self, block, layers, num_classes=1000, zero_init_residual=False, norm_layer=nn.BatchNorm2d):
+    def __init__(self, block, layers, num_classes=cfg.DATA.NUM_CLASSES, zero_init_residual=False, norm_layer=nn.BatchNorm2d):
         super(ResNet, self).__init__()
         self.inplanes = 64
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3,
@@ -164,27 +160,27 @@ class ResNet(nn.Module):
         return x
 
 
-def resnet18(pretrained=False, **kwargs):
-    """Constructs a ResNet-18 model.
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-    """
+def remove_fc_layers(state_dict):
+    # Create a new state dictionary without the fully connected layers
+    new_state_dict = {}
+    for key, value in state_dict.items():
+        if not key.startswith('fc.'):
+            new_state_dict[key] = value
+    return new_state_dict
+
+def resnet18(pretrained, **kwargs):
     model = ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
     if pretrained:
-        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+        state_dict = torch.load('/kaggle/working/project-code1/multiclass/models/pretrained_resnet.pth')
+        state_dict = remove_fc_layers(state_dict)  # Remove the fully connected layers
+        model.load_state_dict(state_dict, strict=False)  # Load modified state_dict
     return model
 
 
-def resnet34(pretrained=False, **kwargs):
-    """Constructs a ResNet-34 model.
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-    """
+def resnet34(**kwargs):
+
     model = ResNet(BasicBlock, [3, 4, 6, 3], **kwargs)
-    if pretrained:
-        model.load_state_dict(model_zoo.load_url(model_urls['resnet34']))
     return model
-
 
 def resnet50(pretrained=False, **kwargs):
     """Constructs a ResNet-50 model.
@@ -192,35 +188,36 @@ def resnet50(pretrained=False, **kwargs):
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
+    
     if pretrained:
-        model.load_state_dict(model_zoo.load_url(model_urls['resnet50']))
+        state_dict = torch.load('/kaggle/working/project-code1/multiclass/models/pretrained_resnet.pth')
+        for key in state_dict.keys():
+            print(key)
+        # Add null class at index 0
+        num_classes = model.fc.out_features
+        updated_state_dict = OrderedDict()
+        for key, value in state_dict.items():
+            if key == 'fc.weight':
+                updated_state_dict[key] = torch.randn(num_classes, value.shape[1])
+            elif key == 'fc.bias':
+                updated_state_dict[key] = torch.randn(num_classes)
+            else:
+                updated_state_dict[key] = value
+        for key in updated_state_dict.keys():
+            print(key)
+        model.load_state_dict(updated_state_dict)
+    
     return model
 
 
-def resnet101(pretrained=False, **kwargs):
-    """Constructs a ResNet-101 model.
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-    """
+
+def resnet101(**kwargs):
+    
     model = ResNet(Bottleneck, [3, 4, 23, 3], **kwargs)
-    if pretrained:
-        model.load_state_dict(model_zoo.load_url(model_urls['resnet101']))
     return model
 
 
-def resnet152(pretrained=False, **kwargs):
-    """Constructs a ResNet-152 model.
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-    """
+def resnet152(**kwargs):
+    
     model = ResNet(Bottleneck, [3, 8, 36, 3], **kwargs)
-    if pretrained:
-        model.load_state_dict(model_zoo.load_url(model_urls['resnet152']))
     return model
-
-
-if __name__ == '__main__':
-    import torch
-    img = torch.randn(4, 3, 224, 224)
-    model = resnet50(True)
-    output = model(img)

@@ -39,7 +39,7 @@ def main():
     torch.backends.cudnn.benchmark = True
 
     net = []  
-    net = BiSeNet(cfg.DATA.NUM_CLASSES) 
+    net = BiSeNet(cfg.DATA.NUM_CLASSES, 'resnet18') 
 
     if len(cfg.TRAIN.GPU_ID)>1:
         net = torch.nn.DataParallel(net, device_ids=cfg.TRAIN.GPU_ID).cuda()
@@ -74,16 +74,11 @@ def train(train_loader, net, criterion, optimizer, epoch):
         labels = Variable(labels).cuda()
 
         outputs = net(inputs)
-        out1, out2, out3= outputs
         # Resize the labels tensor to match the output tensor dimensions
 
-        loss1 = criterion(out1, labels)
-        loss2 = criterion(out2, labels)
-        loss3 = criterion(out3, labels)
-
-        losses = loss1 + loss2 + loss3
+        loss = criterion(outputs[0], labels)
         optimizer.zero_grad()
-        losses.backward()
+        loss.backward()
         optimizer.step()
 
 
@@ -108,9 +103,7 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
         inputs = Variable(inputs, volatile=True).cuda()
         labels = Variable(labels, volatile=True).cuda()
         outputs = net(inputs)
-        out1, out2, out3 = outputs
-
-        out1 = F.softmax(out1, dim=1)  # Apply softmax activation function along the channel dimension
+        outputs = outputs[0]
         
         # For each pixel, determine the class with highest probability
         max_value, predicted = torch.max(out1.data, 1)  
@@ -136,6 +129,8 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
     print(f"Class tot: {mean_tot / len(val_loader):.4f}")
   
   
+    model_size = compute_model_size(net)
+    print('Model size %.4f' % (model_size))
     # Calculate average IoU score over all classes
     #mean_classes[5] =float (iou_ / cfg.DATA.NUM_CLASSES)
     #print(f"Mean IoU: {mean_iou:.4f}")
@@ -146,14 +141,4 @@ def validate(val_loader, net, criterion, optimizer, epoch, restore):
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
-
-
-
-
 

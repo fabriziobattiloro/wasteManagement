@@ -3,14 +3,14 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from models.resnet import resnet18
-from models.basic import _ConvBNReLU
 
-__all__ = ['BiSeNet', 'get_bisenet', 'get_bisenet_resnet18_citys']
+from models.resnet import resnet18, resnet50, resnet34, resnet101
+from models.config import cfg
+from models.basic import _ConvBNReLU
 
 
 class BiSeNet(nn.Module):
-    def __init__(self, nclass, backbone='resnet18', aux=True, jpu=True, pretrained_base=False, **kwargs):
+    def __init__(self, nclass, backbone, aux=False, jpu=False, pretrained_base=False, **kwargs):
         super(BiSeNet, self).__init__()
         self.aux = aux
         self.spatial_path = SpatialPath(3, 128, **kwargs)
@@ -114,10 +114,19 @@ class AttentionRefinmentModule(nn.Module):
 
 
 class ContextPath(nn.Module):
-    def __init__(self, backbone='resnet18', pretrained_base=True, norm_layer=nn.BatchNorm2d, **kwargs):
+    def __init__(self, backbone, pretrained_base=True, norm_layer=nn.BatchNorm2d, **kwargs):
         super(ContextPath, self).__init__()
+        input_channels = 512
         if backbone == 'resnet18':
-            pretrained = resnet18(pretrained=pretrained_base, **kwargs)
+            pretrained = resnet18(pretrained, **kwargs)
+        elif backbone == 'resnet34':
+            pretrained = resnet34(**kwargs)
+        elif backbone == 'resnet50':
+            pretrained = resnet50(**kwargs)
+            input_channels = 2048
+        elif backbone == 'resnet101':
+            pretrained = resnet101(**kwargs)
+            input_channels = 2048
         else:
             raise RuntimeError('unknown backbone: {}'.format(backbone))
         self.conv1 = pretrained.conv1
@@ -130,12 +139,19 @@ class ContextPath(nn.Module):
         self.layer4 = pretrained.layer4
 
         inter_channels = 128
-        self.global_context = _GlobalAvgPooling(512, inter_channels, norm_layer)
+        self.global_context = _GlobalAvgPooling(input_channels, inter_channels, norm_layer)
 
-        self.arms = nn.ModuleList(
-            [AttentionRefinmentModule(512, inter_channels, norm_layer, **kwargs),
-             AttentionRefinmentModule(256, inter_channels, norm_layer, **kwargs)]
+        if backbone in ['resnet50', 'resnet101']:
+            self.arms = nn.ModuleList(
+            [AttentionRefinmentModule(2048, inter_channels, norm_layer, **kwargs),
+             AttentionRefinmentModule(1024, inter_channels, norm_layer, **kwargs),
+             AttentionRefinmentModule(512, inter_channels, norm_layer, **kwargs),]
         )
+        else:
+            self.arms = nn.ModuleList(
+                [AttentionRefinmentModule(512, inter_channels, norm_layer, **kwargs),
+                AttentionRefinmentModule(256, inter_channels, norm_layer, **kwargs),]
+            )
         self.refines = nn.ModuleList(
             [_ConvBNReLU(inter_channels, inter_channels, 3, 1, 1, norm_layer=norm_layer),
              _ConvBNReLU(inter_channels, inter_channels, 3, 1, 1, norm_layer=norm_layer)]
@@ -191,30 +207,7 @@ class FeatureFusion(nn.Module):
         return out
 
 
-def get_bisenet(dataset='citys', backbone='resnet18', pretrained=False, root='~/.torch/models',
-                pretrained_base=True, **kwargs):
-    acronyms = {
-        'pascal_voc': 'pascal_voc',
-        'pascal_aug': 'pascal_aug',
-        'ade20k': 'ade',
-        'coco': 'coco',
-        'citys': 'citys',
-    }
-    from ..data.dataloader import datasets
-    model = BiSeNet(datasets[dataset].NUM_CLASS, backbone=backbone, pretrained_base=pretrained_base, **kwargs)
-    if pretrained:
-        from .model_store import get_model_file
-        device = torch.device(kwargs['local_rank'])
-        model.load_state_dict(torch.load(get_model_file('bisenet_%s_%s' % (backbone, acronyms[dataset]), root=root),
-                              map_location=device))
-    return model
-
-
-def get_bisenet_resnet18_citys(**kwargs):
-    return get_bisenet('citys', 'resnet18', **kwargs)
-
-
 if __name__ == '__main__':
     img = torch.randn(2, 3, 224, 224)
-    model = BiSeNet(5, backbone='resnet18')
+    model = BiSeNet(cfg.DATA.NUM_CLASSES, backbone='resnet18')
     print(model.exclusive)

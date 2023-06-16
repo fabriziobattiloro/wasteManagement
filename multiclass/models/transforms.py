@@ -109,6 +109,13 @@ class Scale(object):
             ow = int(self.size * w / h)
             return img.resize((ow, oh), Image.BILINEAR), mask.resize((ow, oh), Image.NEAREST)
 
+class RandomRotation(object):
+    def __init__(self, degrees):
+        self.degrees = degrees
+
+    def __call__(self, img, mask):
+        angle = random.choice(self.degrees)
+        return img.rotate(angle), mask.rotate(angle)
 
 
 # ===============================label tranforms============================

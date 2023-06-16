@@ -39,3 +39,4 @@ def loading_data():
     val_loader = DataLoader(val_set, batch_size=cfg.VAL.BATCH_SIZE, num_workers=16, shuffle=False)
 
     return train_loader, val_loader, restore_transform
+
