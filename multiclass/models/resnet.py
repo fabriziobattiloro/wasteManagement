@@ -160,22 +160,20 @@ class ResNet(nn.Module):
         return x
 
 
+def remove_fc_layers(state_dict):
+    # Create a new state dictionary without the fully connected layers
+    new_state_dict = {}
+    for key, value in state_dict.items():
+        if not key.startswith('fc.'):
+            new_state_dict[key] = value
+    return new_state_dict
+
 def resnet18(pretrained, **kwargs):
-   
     model = ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
     if pretrained:
         state_dict = torch.load('/kaggle/working/project-code1/multiclass/models/pretrained_resnet.pth')
-        # Add null class at index 0
-        num_classes = model.fc.out_features
-        updated_state_dict = OrderedDict()
-        for key, value in state_dict.items():
-            if key == 'fc.weight':
-                updated_state_dict[key] = torch.randn(num_classes, value.shape[1])
-            elif key == 'fc.bias':
-                updated_state_dict[key] = torch.randn(num_classes)
-            else:
-                updated_state_dict[key] = value
-        model.load_state_dict(updated_state_dict)
+        state_dict = remove_fc_layers(state_dict)  # Remove the fully connected layers
+        model.load_state_dict(state_dict, strict=False)  # Load modified state_dict
     return model
 
 
